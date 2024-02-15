@@ -1,6 +1,11 @@
 import htmlParser, { HTMLElement } from "node-html-parser"
 
-export type ItemValue = string | Item | Item[]
+export type ItemValue = (
+    string |
+    Item |
+    Item[] |
+    string[]
+)
 
 export type Item = {
     [key: string]: ItemValue
@@ -10,6 +15,7 @@ export type Extractor = (element: HTMLElement) => string
 
 export type ModelValue = {
     query?: string
+    fieldType?: "single" | "multiple"
     extractor: Extractor
 }
 
@@ -37,15 +43,21 @@ class Page {
             const modelValue = model[key]
 
             if ("extractor" in modelValue) {
-                const { query, extractor } = modelValue as ModelValue
+                const { query, extractor, fieldType } = modelValue as ModelValue
 
                 if (query) {
-                    const nestedElement = element.querySelector(query)
+                    if (fieldType === "multiple") {
+                        const nestedElements = element.querySelectorAll(query)
+                        data[key] = nestedElements.map(extractor)
 
-                    if (nestedElement) {
-                        data[key] = extractor(nestedElement)
                     } else {
-                        data[key] = ""
+                        const nestedElement = element.querySelector(query)
+
+                        if (nestedElement) {
+                            data[key] = extractor(nestedElement)
+                        } else {
+                            data[key] = ""
+                        }
                     }
                 } else {
                     data[key] = extractor(element)

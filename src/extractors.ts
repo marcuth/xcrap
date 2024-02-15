@@ -1,8 +1,23 @@
 import { HTMLElement } from "node-html-parser"
 
-function extractText(element: HTMLElement): string {
+function extractInnerText(element: HTMLElement): string {
     const text = element.innerText
-    return text
+    return text ?? ""
+}
+
+function extractTextContent(element: HTMLElement): string {
+    const text = element.textContent
+    return text ?? ""
+}
+
+function extractText(element: HTMLElement): string {
+    const text = element.text
+    return text ?? ""
+}
+
+function extractInnerHtml(element: HTMLElement): string {
+    const html = element.innerHTML
+    return html ?? ""
 }
 
 const extractAttribute = (name: string) => (element: HTMLElement): string => {
@@ -11,6 +26,9 @@ const extractAttribute = (name: string) => (element: HTMLElement): string => {
 }
 
 export {
+    extractInnerText,
+    extractTextContent,
     extractText,
+    extractInnerHtml,
     extractAttribute
 }

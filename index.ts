@@ -126,4 +126,4 @@ async function scrapeDragonCityNews(): Promise<void> {
     console.dir(newsSet, { depth: null })
 }
 
-scrapeDragonCityNews()
+scrapeDeetlistHeroicRace()
