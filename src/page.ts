@@ -36,7 +36,7 @@ class Page {
         for (const key in model) {
             const modelValue = model[key]
 
-            if ("query" in modelValue && "extractor" in modelValue) {
+            if ("extractor" in modelValue) {
                 const { query, extractor } = modelValue as ModelValue
 
                 if (query) {

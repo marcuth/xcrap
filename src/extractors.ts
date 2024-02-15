@@ -7,7 +7,7 @@ function extractText(element: HTMLElement): string {
 
 const extractAttribute = (name: string) => (element: HTMLElement): string => {
     const attribute = element.attrs[name]
-    return attribute
+    return attribute ?? ""
 }
 
 export {
