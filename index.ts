@@ -37,7 +37,7 @@ import { Model } from "./src/page"
         missions: {
             query: ".mm",
             model: missionModel,
-            isArray: true
+            isGroup: true
         }
     }
 
@@ -49,7 +49,7 @@ import { Model } from "./src/page"
         nodes: {
             query: ".nn",
             model: nodeModel,
-            isArray: true
+            isGroup: true
         }
     }
 

@@ -14,7 +14,7 @@ export type ModelValue = {
 export type ModelNestedValue = {
     query: string
     model: Model
-    isArray?: boolean
+    isGroup?: boolean
 }
 
 export type Model = {
@@ -49,10 +49,10 @@ class Page {
                     data[key] = extractor(element)
                 }
             } else {
-                const { model: nestedModel, query, isArray } = modelValue as ModelNestedValue
+                const { model: nestedModel, query, isGroup } = modelValue as ModelNestedValue
                 const nestedElements = element.querySelectorAll(query)
 
-                if (isArray) {
+                if (isGroup) {
                     data[key] = nestedElements.map(nestedElement => this.processModel(nestedElement, nestedModel))
                 } else {
                     const nestedElement = nestedElements[0]
