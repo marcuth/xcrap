@@ -1,7 +1,7 @@
 {
   "name": "xcrap",
   "version": "1.0.0",
-  "description": "",
+  "description": "Xcrap is a Web Scraping framework for JavaScript, designed to facilitate the process of extracting data from multiple pages or even just one, with a sophisticated page parsing system.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
