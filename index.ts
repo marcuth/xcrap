@@ -1,32 +1,41 @@
-import Xcrap from "./src"
+import Xcrap, { Tracker } from "./src"
 
-import { extractAttribute, extractText } from "./src/extractors"
+import { extractText } from "./src/extractors"
 import { Model } from "./src/page"
 
 ;(async () => {
     const xcrap = new Xcrap()
 
-    xcrap.initUrls(["https://deetlist.com/dragoncity/all-dragons/"])
+    const currentPageTracker: Tracker = {
+        query: ".listlink a.active",
+        extractor: extractText
+    }
+
+    const lastPageTracker: Tracker = {
+        query: ".listlink a:nth-child(15)",
+        extractor: extractText
+    }
+
+    await xcrap.initUrlsAndPaginateWithTracker(
+        ["https://dbgames.info/dragoncity/dragons?rarity=rare&p={pageIndex}"],
+        currentPageTracker,
+        lastPageTracker
+    )
 
     const pageSet = await xcrap.getAll()
 
-    pageSet.forEach(page => {
-        const model: Model = {
-            pageUrl: {
-                extractor: extractAttribute("href")
-            },
-            name: {
-                query: ".drag",
-                extractor: extractText
-            }
+    const dragon: Model = {
+        name: {
+            query: "a",
+            extractor: extractText
+        },
+        rarity: {
+            query: "a.iconized-text",
+            extractor: extractText
         }
+    }
 
-        const items = page.parseItemGroup("a:has(.drag)", model)
+    const dragons = pageSet.parseItemGroupForAll("div.entity", dragon)
 
-        console.log(items)
-    })
-
-    const imageSources = pageSet[0].parseAll("img", extractAttribute("src"))
-
-    console.log(imageSources)
+    console.log(dragons)
 })();

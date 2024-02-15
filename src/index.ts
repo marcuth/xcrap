@@ -57,8 +57,8 @@ class Xcrap {
         initUrls: string[],
         currentPageTracker: Tracker,
         lastPageTracker: Tracker,
-        limits: number[]
-    ): Promise<string[]> {
+        limits?: number[]
+    ): Promise<void> {
         const formattedUrls: string[] = []
 
         for (let urlIndex = 0; urlIndex < initUrls.length; urlIndex++) {
@@ -84,7 +84,7 @@ class Xcrap {
             formattedUrls.push(...currentFormattedUrls)
         }
 
-        return formattedUrls
+        this.initUrls(formattedUrls)
     }
 
     public async get(url: string): Promise<Page> {
