@@ -1,16 +1,24 @@
 import htmlParser, { HTMLElement } from "node-html-parser"
 
 export type Item = {
-    [key: string]: string
+    [key: string]: string | Item | Item[]
 }
 
 export type Extractor = (element: HTMLElement) => string
 
+export type ModelValue = {
+    query?: string
+    extractor: Extractor
+}
+
+export type ModelNestedValue = {
+    query: string
+    model: Model
+    isArray?: boolean
+}
+
 export type Model = {
-    [key: string]: {
-        query?: string
-        extractor: Extractor
-    }
+    [key: string]: ModelValue | ModelNestedValue
 }
 
 class Page {
@@ -18,6 +26,42 @@ class Page {
 
     public constructor(source: string) {
         this.source = source
+    }
+
+    private processModel(element: HTMLElement, model: Model): Item {
+        const data: Item = {}
+
+        for (const key in model) {
+            const modelValue = model[key]
+
+            if ("query" in modelValue && "extractor" in modelValue) {
+                const { query, extractor } = modelValue as ModelValue
+
+                if (query) {
+                    const nestedElement = element.querySelector(query)
+
+                    if (nestedElement) {
+                        data[key] = extractor(nestedElement)
+                    } else {
+                        data[key] = ""
+                    }
+                } else {
+                    data[key] = extractor(element)
+                }
+            } else {
+                const { model: nestedModel, query, isArray } = modelValue as ModelNestedValue
+                const nestedElements = element.querySelectorAll(query)
+
+                if (isArray) {
+                    data[key] = nestedElements.map(nestedElement => this.processModel(nestedElement, nestedModel))
+                } else {
+                    const nestedElement = nestedElements[0]
+                    data[key] = nestedElement ? this.processModel(nestedElement, nestedModel) : {}
+                }
+            }
+        }
+
+        return data
     }
 
     public parseItemGroup(
@@ -28,30 +72,14 @@ class Page {
         const document = htmlParser.parse(this.source)
         const items = document.querySelectorAll(query)
 
-        let dataSet = items.map(item => {
-            const data: Item = {}
-
-            for (const key in model) {
-                const { query, extractor } = model[key]
-
-                if (query) {
-                    const element = item.querySelector(query)
-
-                    if (element) {
-                        data[key] = extractor(element)
-                    } else {
-                        data[key] = ""
-                    }
-                } else {
-                    data[key] = extractor(item)
-                }
-            }
-
+        let dataSet = items.map((item, index) => {
+            if (limit != undefined && index >= limit) return
+            const data: Item = this.processModel(item, model)
             return data
-        })
+        }) as Item[]
 
         if (limit != undefined && dataSet.length >= limit) {
-            dataSet = dataSet.slice(0,  limit)
+            dataSet = dataSet.slice(0, limit)
         }
 
         return dataSet
