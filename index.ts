@@ -34,6 +34,10 @@ import { Model } from "./src/page"
     }
 
     const nodeModel: Model = {
+        title: {
+            query: ".nnh",
+            extractor: extractText
+        },
         missions: {
             query: ".mm",
             model: missionModel,
@@ -42,8 +46,8 @@ import { Model } from "./src/page"
     }
 
     const lapModel: Model = {
-        lapTitle: {
-            query: ".nnt",
+        title: {
+            query: ".nnh",
             extractor: extractText,
         },
         nodes: {

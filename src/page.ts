@@ -1,7 +1,9 @@
 import htmlParser, { HTMLElement } from "node-html-parser"
 
+export type ItemValue = string | Item | Item[]
+
 export type Item = {
-    [key: string]: string | Item | Item[]
+    [key: string]: ItemValue
 }
 
 export type Extractor = (element: HTMLElement) => string
