@@ -99,6 +99,14 @@ class Page {
         return dataSet
     }
 
+    public parseItem(
+        query: string,
+        model: Model
+    ): Item {
+        const item = this.parseItemGroup(query, model, 1)[0]
+        return item
+    }
+
     public parseAll(
         query: string,
         extractor: Extractor,
