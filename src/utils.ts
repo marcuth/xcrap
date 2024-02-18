@@ -13,6 +13,4 @@ function preProcessUrls(urlTemplate: string, data: DataItem[]): string[] {
     return urls
 }
 
-export {
-    preProcessUrls
-}
+export { preProcessUrls }

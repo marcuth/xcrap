@@ -1,4 +1,5 @@
 import axios, { AxiosProxyConfig, Axios } from "axios"
+import fakeUserAgent from "fake-useragent"
 
 import Page, { Extractor } from "./page"
 import PageSet from "./page-set"
@@ -8,27 +9,53 @@ export type Tracker = {
     extractor: Extractor
 }
 
+export type ProxyFunction = () => AxiosProxyConfig
+export type UserAgentFunction = () => string
+
 export type XcrapOptions = {
-    proxy?: AxiosProxyConfig,
-    userAgent?: string
+    proxy?: AxiosProxyConfig | ProxyFunction,
+    userAgent?: string | UserAgentFunction
 }
 
 const defaultUserAgent = "Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
 
 class Xcrap {
-    private proxy?: AxiosProxyConfig
     private client: Axios
-    private urls: string[]
 
-    public constructor({ proxy, userAgent }: XcrapOptions = {}) {
-        this.proxy = proxy
-        this.urls = []
+    public constructor({
+        proxy,
+        userAgent = fakeUserAgent()
+    }: XcrapOptions = {}) {
+        const currentProxy = typeof proxy === "function" ?
+            proxy() :
+            proxy
+
+        const currentUserAgent = typeof userAgent === "function" ?
+            userAgent() :
+            userAgent ??
+            defaultUserAgent
 
         this.client = axios.create({
-            proxy: this.proxy,
+            proxy: currentProxy,
             headers: {
-                "User-Agent": userAgent ?? defaultUserAgent
+                "User-Agent": currentUserAgent
             }
+        })
+
+        this.client.interceptors.request.use((config) => {
+            const currentProxy = typeof proxy === "function" ?
+                proxy() :
+                proxy
+
+            const currentUserAgent = typeof userAgent === "function" ?
+                userAgent() :
+                userAgent ??
+                defaultUserAgent
+            
+            config.proxy = currentProxy
+            config.headers["User-Agent"] = currentUserAgent
+
+            return config
         })
     }
 
@@ -37,11 +64,7 @@ class Xcrap {
         return response.data as string
     }
 
-    public initUrls(urls: string[]): void {
-        this.urls = urls
-    }
-
-    public initUrlsAndPaginateWithRange(initUrls: string[], paginationRange: [number, number]): void {
+    public getPaginationUrlsWithRange(initUrls: string[], paginationRange: [number, number]): string[] {
         const formattedUrls: string[] = []
 
         for (let pageIndex = paginationRange[0]; pageIndex <=  paginationRange[1]; pageIndex++) {
@@ -50,15 +73,15 @@ class Xcrap {
             }
         }
 
-        this.initUrls(formattedUrls)
+        return formattedUrls
     }
 
-    public async initUrlsAndPaginateWithTracker(
+    public async getPaginationUrlsWithTracker(
         initUrls: string[],
         currentPageTracker: Tracker,
         lastPageTracker: Tracker,
         limits?: number[]
-    ): Promise<void> {
+    ): Promise<string[]> {
         const formattedUrls: string[] = []
 
         for (let urlIndex = 0; urlIndex < initUrls.length; urlIndex++) {
@@ -84,7 +107,7 @@ class Xcrap {
             formattedUrls.push(...currentFormattedUrls)
         }
 
-        this.initUrls(formattedUrls)
+        return formattedUrls
     }
 
     public async get(url: string): Promise<Page> {
@@ -93,15 +116,14 @@ class Xcrap {
         return page
     }
 
-    public async getAll(): Promise<PageSet> {
+    public async getAll(urls: string[]): Promise<PageSet> {
         const tasks = []
 
-        for (const url of this.urls) {
-            tasks.push(this.fetchPageSource(url))
+        for (const url of urls) {
+            tasks.push(this.get(url))
         }
 
-        const sources = await Promise.all(tasks)
-        const pages = sources.map(source => new Page(source))
+        const pages = await Promise.all(tasks)
         const pageSet = new PageSet(...pages)
 
         return pageSet
