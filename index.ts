@@ -1,11 +1,12 @@
+import fakeUa from "fake-useragent"
 import Xcrap from "./src"
-import { PuppeteerClient } from "./src/client"
+import { AxiosClient } from "./src/client"
 
 import { extractAttribute, extractText } from "./src/extractors"
 import { Model } from "./src/page"
 
 async function scrapeDeetlistHeroicRace(): Promise<void> {
-    const client = new PuppeteerClient({ headless: false })
+    const client = new AxiosClient({ userAgent: fakeUa })
     const xcrap = new Xcrap({ client: client })
 
     const missionModel: Model = {
@@ -65,8 +66,6 @@ async function scrapeDeetlistHeroicRace(): Promise<void> {
         model: lapModel
     })
 
-    client.close()
-    
     console.dir(laps, { depth: null })
 }
 scrapeDeetlistHeroicRace()
