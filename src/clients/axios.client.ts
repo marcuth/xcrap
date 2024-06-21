@@ -1,6 +1,6 @@
 import axios, { Axios, AxiosProxyConfig, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios"
 
-import BaseClient, { Client, ClientOptions, defaultUserAgent } from "./base"
+import BaseClient, { Client, ClientOptions, defaultUserAgent } from "./base.client"
 import PageSet from "../page-set"
 import Page from "../page"
 

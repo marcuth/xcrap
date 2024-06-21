@@ -1,9 +1,5 @@
 import fakeUa from "fake-useragent"
-import Xcrap from "./src"
-import { PuppeteerClient } from "./src/client"
-
-import { extractAttribute, extractText } from "./src/extractors"
-import { Model } from "./src/page"
+import Xcrap, { PuppeteerClient, Model, extractText } from "./src"
 
 async function scrapeDeetlistHeroicRace(): Promise<void> {
     const client = new PuppeteerClient()

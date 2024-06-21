@@ -1,6 +1,6 @@
 import puppeteer, { Browser, PuppeteerLaunchOptions } from "puppeteer"
 
-import BaseClient, { Client, ClientOptions } from "./base"
+import BaseClient, { Client, ClientOptions } from "./base.client"
 import PageSet from "../page-set"
 import Page from "../page"
 

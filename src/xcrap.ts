@@ -1,5 +1,5 @@
 import { Extractor, Item, Model } from "./page"
-import { Client } from "./client/base"
+import { Client } from "./clients/base.client"
 
 export type Tracker = {
     query: string
