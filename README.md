@@ -9,11 +9,13 @@ Xcrap is a Web Scraping framework for JavaScript, designed to facilitate the pro
 ```js
 const {
     default: Xcrap,
+    AxiosClient,
     extractInnerText
 } = require("xcrap")
 
 ;(async () => {
-    const xcrap = new Xcrap()
+    const client = new AxiosClient()
+    const xcrap = new Xcrap({ client })
 
     const missionModel = {
         title: {
@@ -66,8 +68,11 @@ const {
         }
     }
 
-    const page = await xcrap.get("https://deetlist.com/dragoncity/events/race/")
-    const laps = page.parseItemGroup(".hl", lapModel)
+    const laps = await xcrap.scrape({
+        url: "https://deetlist.com/dragoncity/events/race/",
+        query: ".hl",
+        model: lapMode
+    })
     
     console.log(laps)
 })();

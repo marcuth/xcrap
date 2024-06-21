@@ -1,8 +1,8 @@
 import fakeUa from "fake-useragent"
-import Xcrap, { PuppeteerClient, Model, extractText } from "./src"
+import Xcrap, { AxiosClient, Model, extractText } from "./src"
 
 async function scrapeDeetlistHeroicRace(): Promise<void> {
-    const client = new PuppeteerClient()
+    const client = new AxiosClient({ userAgent: fakeUa })
     const xcrap = new Xcrap({ client: client })
 
     const missionModel: Model = {
