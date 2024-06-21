@@ -1,4 +1,4 @@
-import puppeteer, { Browser } from "puppeteer"
+import puppeteer, { Browser, PuppeteerLaunchOptions } from "puppeteer"
 
 import BaseClient, { Client, ClientOptions } from "./base"
 import PageSet from "../page-set"
@@ -7,19 +7,17 @@ import Page from "../page"
 export type PuppeteerProxy = string
 
 export type PuppeteerClientOptions = Omit<
-    ClientOptions<PuppeteerProxy> & {
-        headless?: boolean
-    }, "userAgent"
->
+    ClientOptions<PuppeteerProxy> & PuppeteerLaunchOptions, "userAgent"
+> 
 
 class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
-    public headless: boolean
+    public readonly options: PuppeteerClientOptions
     private browser?: Browser
 
     public constructor(options: PuppeteerClientOptions = {}) {
         super(options)
 
-        this.headless = options.headless ? true : false
+        this.options = options
         this.browser = undefined
     }
 
@@ -35,8 +33,8 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         }
 
         this.browser = await puppeteer.launch({
-            headless: this.headless,
-            args: puppeteerArguments
+            ...this.options,
+            args: puppeteerArguments ?? this.options.args
         })
     }
 
