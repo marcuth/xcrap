@@ -50,10 +50,15 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
             await this.initBrowser()
         }
 
+        const currentCorsProxyUrl = typeof this.corsProxyUrl === "function" ?
+            this.corsProxyUrl() :
+            this.corsProxyUrl
+
         const page = await this.browser!.newPage()
-        await page.goto(url)
+        await page.goto(`${currentCorsProxyUrl}${url}`)
         const content = await page.content()
         await page.close()
+
         return new Page(content)
     }
 

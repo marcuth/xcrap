@@ -25,10 +25,16 @@ const extractAttribute = (name: string) => (element: HTMLElement): string => {
     return attribute ?? ""
 }
 
+const extractValue = (element: HTMLElement): string => {
+    const value = element.getAttribute("value")
+    return value ?? ""
+}
+
 export {
     extractInnerText,
     extractTextContent,
     extractText,
     extractInnerHtml,
-    extractAttribute
+    extractAttribute,
+    extractValue
 }

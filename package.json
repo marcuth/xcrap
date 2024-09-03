@@ -1,7 +1,7 @@
 {
   "name": "xcrap",
   "types": "./dist/index.d.ts",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Xcrap is a Web Scraping framework for JavaScript, designed to facilitate the process of extracting data from multiple pages or even just one, with a sophisticated page parsing system.",
   "main": "dist/index.js",
   "scripts": {
@@ -12,13 +12,14 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^1.6.7",
-    "fake-useragent": "^1.0.1",
     "node-html-parser": "^6.1.12",
     "puppeteer": "^22.3.0"
   },
   "devDependencies": {
     "@types/fake-useragent": "^1.0.0",
     "@types/node": "^20.11.17",
+    "fake-useragent": "^1.0.1",
+    "restructure-object": "^0.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }

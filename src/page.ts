@@ -1,5 +1,15 @@
 import htmlParser, { HTMLElement } from "node-html-parser"
 
+export type ResultData<T> = {
+    [K in keyof T]: T[K] extends { fieldType: "multiple" }
+        ? string[]
+        : T[K] extends { model: infer NestedModel }
+        ? T[K] extends { isGroup: true }
+            ? ResultData<NestedModel>[]
+            : ResultData<NestedModel>
+        : string
+}
+
 export type ItemValue = (
     string |
     Item |

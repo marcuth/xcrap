@@ -1,13 +1,15 @@
-import axios, { Axios, AxiosProxyConfig, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios"
+import axios, { Axios, AxiosProxyConfig, AxiosRequestConfig, InternalAxiosRequestConfig, RawAxiosRequestHeaders, AxiosHeaders, HeadersDefaults } from "axios"
 
 import BaseClient, { Client, ClientOptions, defaultUserAgent } from "./base.client"
 import PageSet from "../page-set"
 import Page from "../page"
 
+export type AxiosClientOptions = ClientOptions<AxiosProxyConfig>
+
 class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
     private client: Axios
 
-    constructor(options: ClientOptions<AxiosProxyConfig> = {}) {
+    constructor(options: AxiosClientOptions = {}) {
         super(options)
 
         const currentProxy = typeof this.proxy === "function" ?
@@ -58,8 +60,13 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
     }
 
     public async get(url: string): Promise<Page> {
-        const source = await this.fetchPageSource(url)
+        const currentCorsProxyUrl = typeof this.corsProxyUrl === "function" ?
+            this.corsProxyUrl() :
+            this.corsProxyUrl
+
+        const source = await this.fetchPageSource(`${currentCorsProxyUrl ?? ""}${url}`)
         const page = new Page(source)
+        
         return page
     }
 
