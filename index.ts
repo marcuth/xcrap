@@ -9,6 +9,7 @@ import { ResultData } from "./src/page"
 async function scrapeDeetlistHeroicRace(): Promise<void> {
     const client = new PuppeteerClient({
         headless: false,
+        userAgent: fakeUa,
         corsProxyUrl: "https://proxy.marcuth.workers.dev/",
     })
 
@@ -150,7 +151,12 @@ async function scrapeDeetlistHeroicRace(): Promise<void> {
         })
     })
 
-    await fs.promises.writeFile("laps.json", JSON.stringify(laps, null, 4))
+    // await fs.promises.writeFile("laps.json", JSON.stringify(laps, null, 4))
+
+    console.log(xcrap.getPaginationUrlsWithRange({
+        initUrls: ["https://google.com/page={pageIndex}"],
+        paginationRange: [1, 50]
+    }))
 
     client.close()
 }

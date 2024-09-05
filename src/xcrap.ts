@@ -22,6 +22,18 @@ export type ScrapeAllOptions = {
     model: Model
 }
 
+export type GetPaginationUrlsWithTrackerOptions = {
+    initUrls: string[]
+    currentPageTracker: Tracker
+    lastPageTracker: Tracker
+    limits?: number[]
+}
+
+export type GetPaginationUrlsWithRangeOptions = {
+    initUrls: string[]
+    paginationRange: [number, number]
+}
+
 class Xcrap {
     private client: Client
 
@@ -29,11 +41,14 @@ class Xcrap {
         this.client = client
     }
 
-    public getPaginationUrlsWithRange(initUrls: string[], paginationRange: [number, number]): string[] {
+    public getPaginationUrlsWithRange({
+        initUrls,
+        paginationRange
+    }: GetPaginationUrlsWithRangeOptions): string[] {
         const formattedUrls: string[] = []
 
-        for (let pageIndex = paginationRange[0]; pageIndex <=  paginationRange[1]; pageIndex++) {
-            for (let url in initUrls) {
+        for (let pageIndex = paginationRange[0]; pageIndex <= paginationRange[1]; pageIndex++) {
+            for (let url of initUrls) {
                 formattedUrls.push(url.replace(/{pageIndex}/g, String(pageIndex)))
             }
         }
@@ -41,12 +56,12 @@ class Xcrap {
         return formattedUrls
     }
 
-    public async getPaginationUrlsWithTracker(
-        initUrls: string[],
-        currentPageTracker: Tracker,
-        lastPageTracker: Tracker,
-        limits?: number[]
-    ): Promise<string[]> {
+    public async getPaginationUrlsWithTracker({
+        initUrls,
+        currentPageTracker,
+        lastPageTracker,
+        limits
+    }: GetPaginationUrlsWithTrackerOptions): Promise<string[]> {
         const formattedUrls: string[] = []
 
         for (let urlIndex = 0; urlIndex < initUrls.length; urlIndex++) {
