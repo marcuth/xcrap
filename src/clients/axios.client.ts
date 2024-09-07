@@ -1,30 +1,20 @@
-import axios, { Axios, AxiosProxyConfig, AxiosRequestConfig, InternalAxiosRequestConfig, RawAxiosRequestHeaders, AxiosHeaders, HeadersDefaults } from "axios"
+import axios, { Axios, AxiosProxyConfig, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios"
 
 import BaseClient, { Client, ClientOptions, defaultUserAgent } from "./base.client"
-import PageSet from "../page-set"
-import Page from "../page"
+import { PageParserSet, PageParser } from "../parsing"
 
 export type AxiosClientOptions = ClientOptions<AxiosProxyConfig>
 
 class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
-    private client: Axios
+    protected client: Axios
 
-    constructor(options: AxiosClientOptions = {}) {
+    public constructor(options: AxiosClientOptions = {}) {
         super(options)
 
-        const currentProxy = typeof this.proxy === "function" ?
-            this.proxy() :
-            this.proxy
-
-        const currentUserAgent = typeof this.userAgent === "function" ?
-            this.userAgent() :
-            this.userAgent ??
-            defaultUserAgent
-
         this.client = axios.create({
-            proxy: currentProxy,
+            proxy: this.currentProxy,
             headers: {
-                "User-Agent": currentUserAgent
+                "User-Agent": this.currentUserAgent ?? defaultUserAgent
             }
         })
 
@@ -33,22 +23,13 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
         })
     }
 
-    private interceptRequest(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
-        const currentProxy = typeof this.proxy === "function" ?
-            this.proxy() :
-            this.proxy
-
-        const currentUserAgent = typeof this.userAgent === "function" ?
-            this.userAgent() :
-            this.userAgent ??
-            defaultUserAgent
-        
-        config.proxy = currentProxy
+    protected interceptRequest(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {        
+        config.proxy = this.currentProxy
 
         if (config.headers) {
-            config.headers["User-Agent"] = currentUserAgent
+            config.headers["User-Agent"] = this.currentUserAgent ?? defaultUserAgent
         } else {
-            (config as AxiosRequestConfig).headers = { "User-Agent": currentUserAgent }
+            (config as AxiosRequestConfig).headers = { "User-Agent": this.currentUserAgent }
         }
 
         return config
@@ -59,21 +40,16 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
         return response.data as string
     }
 
-    public async get(url: string): Promise<Page> {
-        const currentCorsProxyUrl = typeof this.corsProxyUrl === "function" ?
-            this.corsProxyUrl() :
-            this.corsProxyUrl
-
-        const source = await this.fetchPageSource(`${currentCorsProxyUrl ?? ""}${url}`)
-        const page = new Page(source)
-        
+    public async get(url: string): Promise<PageParser> {
+        const source = await this.fetchPageSource(`${this.currentCorsProxyUrl ?? ""}${url}`)
+        const page = new PageParser(source)
         return page
     }
 
-    public async getAll(urls: string[]): Promise<PageSet> {
+    public async getAll(urls: string[]): Promise<PageParserSet> {
         const tasks = urls.map((url) => this.get(url))
         const pages = await Promise.all(tasks)
-        const pageSet = new PageSet(...pages)
+        const pageSet = new PageParserSet(...pages)
         return pageSet
     }
 }

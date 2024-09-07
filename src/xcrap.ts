@@ -1,5 +1,6 @@
-import { Extractor, Item, Model } from "./page"
+import { Extractor, ParsingModel, ResultData } from "./parsing/page.parsing"
 import { Client } from "./clients/base.client"
+import { AxiosClient } from "./clients"
 
 export type Tracker = {
     query: string
@@ -10,16 +11,16 @@ export type XcrapOptions = {
     client: Client
 }
 
-export type ScrapeOptions = {
+export type ScrapeOptions<ParsingModelType> = {
     url: string
     query: string
-    model: Model
+    model: ParsingModelType
 }
 
-export type ScrapeAllOptions = {
+export type ScrapeAllOptions<ParsingModelType> = {
     urls: string[]
     query: string
-    model: Model
+    model: ParsingModelType
 }
 
 export type GetPaginationUrlsWithTrackerOptions = {
@@ -35,10 +36,15 @@ export type GetPaginationUrlsWithRangeOptions = {
 }
 
 class Xcrap {
-    private client: Client
+    public client: Client
 
     public constructor({ client }: XcrapOptions) {
         this.client = client
+    }
+
+    public static createDefault() {
+        const client = new AxiosClient()
+        return new Xcrap({ client: client })
     }
 
     public getPaginationUrlsWithRange({
@@ -69,8 +75,8 @@ class Xcrap {
 
             const url = initUrls[urlIndex]
             const page = await this.client.get(url)
-            const currentPage = Number(page.parseOne(currentPageTracker.query, currentPageTracker.extractor))
-            const lastPage = Number(page.parseOne(lastPageTracker.query, lastPageTracker.extractor))
+            const currentPage = Number(page.parseOne(currentPageTracker))
+            const lastPage = Number(page.parseOne(lastPageTracker))
 
             for (let pageIndex = currentPage; pageIndex <= lastPage; pageIndex++) {
                 if (
@@ -90,15 +96,35 @@ class Xcrap {
         return formattedUrls
     }
 
-    public async scrape({ url, query, model }: ScrapeOptions): Promise<Item[]> {
+    public async scrape<ParsingModelType extends ParsingModel>({
+        url,
+        query,
+        model
+    }: ScrapeOptions<ParsingModelType>): Promise<ResultData<ParsingModelType>[]> {
         const page = await this.client.get(url)
-        const items = page.parseItemGroup(query, model)
+
+        const items = page.parseItemGroup({
+            query: query,
+            model: model
+        })
+
         return items
     }
 
-    public async scrapeAll({ urls, query, model }: ScrapeAllOptions): Promise<Item[][]> {
-        const pages = await this.client.getAll(urls)
-        const itemsSet = pages.map(page => page.parseItemGroup(query, model))
+    public async scrapeAll<ParsingModelType extends ParsingModel>({
+        urls,
+        query,
+        model
+    }: ScrapeAllOptions<ParsingModelType>): Promise<ResultData<ParsingModelType>[][]> {
+        const pageParsers = await this.client.getAll(urls)
+
+        const itemsSet = pageParsers.map(pageParser => {
+            return pageParser.parseItemGroup({
+                query: query,
+                model: model
+            })
+        })
+
         return itemsSet
     }
 }

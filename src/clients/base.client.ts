@@ -1,5 +1,4 @@
-import PageSet from "../page-set"
-import Page from "../page"
+import { PageParserSet, PageParser } from "../parsing"
 
 export type CorsProxyUrlFuction = () => string
 export type ProxyFunction<ProxyReturn = any> = () => ProxyReturn
@@ -23,13 +22,38 @@ class BaseClient<Proxy> {
         this.userAgent = userAgent ?? defaultUserAgent
         this.corsProxyUrl = corsProxyUrl
     }
+
+    protected get currentCorsProxyUrl(): string | undefined {
+        const currentCorsProxyUrl = typeof this.corsProxyUrl === "function" ?
+            this.corsProxyUrl() :
+            this.corsProxyUrl
+
+        return currentCorsProxyUrl
+    }
+
+    protected get currentUserAgent(): string | undefined {
+        const currentUserAgent = typeof this.userAgent === "function" ?
+            this.userAgent() :
+            this.userAgent
+
+        return currentUserAgent
+    }
+
+    protected get currentProxy(): any | undefined {
+        const currentProxy = typeof this.proxy === "function" ?
+            (this.proxy as ProxyFunction)() :
+            this.proxy
+
+        return currentProxy
+    }
 }
 
 export type Client = {
     proxy?: any | ProxyFunction<any>
     userAgent?: string | UserAgentFunction
-    get(url: string): Promise<Page>
-    getAll(urls: string[]): Promise<PageSet>
+    corsProxyUrl?: string | CorsProxyUrlFuction
+    get(url: string): Promise<PageParser>
+    getAll(urls: string[]): Promise<PageParserSet>
 }
 
 export default BaseClient

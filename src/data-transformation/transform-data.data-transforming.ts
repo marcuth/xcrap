@@ -1,6 +1,4 @@
-type AnyObject = {
-    [key: string]: any
-}
+import { AnyObject } from "../common/types"
 
 export type NextMiddleware<T, R = any> = (nextContext?: Partial<T & AnyObject>) => R
 export type TransformationMiddleware<T extends AnyObject, R = any> = (data: T & AnyObject, next: NextMiddleware<T>) => R
@@ -19,8 +17,8 @@ export type TransformDataOptions<T extends AnyObject> = {
 function transformData<T extends AnyObject>({
     data,
     model
-}: TransformDataOptions<T>): Partial<T> {
-    const result: Partial<T> = {}
+}: TransformDataOptions<T>): any {
+    const result: AnyObject = {}
 
     for (const key in model) {
         if (model[key]) {
@@ -44,32 +42,11 @@ function transformData<T extends AnyObject>({
                 return value
             }
 
-            result[key as keyof T] = runMiddleware(data)
+            result[key] = runMiddleware(data)
         }
     }
 
     return result
-}
-
-export type CallNextOptions<T extends AnyObject> = {
-    middleware: TransformationMiddleware<T>
-    resultKey?: string
-}
-
-export function callNext<T extends AnyObject>({
-    middleware,
-    resultKey
-}: CallNextOptions<T>) {
-    return (data: T & AnyObject, next: NextMiddleware<T>) => {
-        const result = middleware(data, () => {})
-        const nextContext: Partial<T & AnyObject> = {}
-
-        if (resultKey) {
-            nextContext[resultKey as keyof typeof nextContext] = result
-        }
-
-        return next(nextContext)
-    }
 }
 
 export default transformData

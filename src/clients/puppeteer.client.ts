@@ -1,26 +1,36 @@
 import puppeteer, { Browser, Page as PuppeteerPage, PuppeteerLaunchOptions } from "puppeteer"
 
 import BaseClient, { Client, ClientOptions } from "./base.client"
-import PageSet from "../page-set"
-import Page from "../page"
+import { PageParserSet, PageParser } from "../parsing"
 
 export type PuppeteerProxy = string
-
 export type PuppeteerClientOptions = ClientOptions<PuppeteerProxy> & PuppeteerLaunchOptions & {}
+export type PuppeteerClientActionFunction = (page: PuppeteerPage) => any | Promise<any>
+export type PuppeteerClientActionType = "beforeRequest" | "afterRequest"
 
-export type GetMethodOptionActionsPropItem = (page: PuppeteerPage) => any | Promise<any>
+export type PuppeteerClientAction = PuppeteerClientActionFunction | {
+    func: PuppeteerClientActionFunction
+    type: PuppeteerClientActionType
+}
 
 export type GetMethodOptions = {
     url: string
-    actions?: GetMethodOptionActionsPropItem[]
+    actions?: PuppeteerClientAction[]
     javaScriptEnabled?: boolean
 }
 
 export type GetAllMethodOptions = GetMethodOptions[]
 
+export type ExtractActionsResult = {
+    before: PuppeteerClientActionFunction[]
+    after: PuppeteerClientActionFunction[]
+}
+
+export const defaultActionType = "afterRequest"
+
 class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
     public readonly options: PuppeteerClientOptions
-    private browser?: Browser
+    protected browser?: Browser
 
     public constructor(options: PuppeteerClientOptions = {}) {
         super(options)
@@ -29,15 +39,11 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         this.browser = undefined
     }
 
-    private async initBrowser(): Promise<void> {
+    protected async initBrowser(): Promise<void> {
         const puppeteerArguments: string[] = []
 
         if (this.proxy) {
-            const currentProxy = typeof this.proxy === "function" ?
-                this.proxy() :
-                this.proxy
-
-            puppeteerArguments.push(`--proxy-server=${currentProxy}`)
+            puppeteerArguments.push(`--proxy-server=${this.currentProxy}`)
         }
 
         if (this.options.args && this.options.args.length > 0) {
@@ -51,60 +57,86 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         })
     }
 
-    private async closeBrowser(): Promise<void> {
+    protected async ensureBrowser(): Promise<void> {
+        if (!this.browser) {
+            await this.initBrowser()
+        }
+    }
+
+    protected async closeBrowser(): Promise<void> {
         if (this.browser) {
             await this.browser.close()
             this.browser = undefined
         }
     }
 
-    public async get(urlOrOptions: string | GetMethodOptions): Promise<Page> {
-        let url = typeof urlOrOptions === "string" ? urlOrOptions : urlOrOptions.url
-
-        if (!this.browser) {
-            await this.initBrowser()
+    protected async configurePage(page: PuppeteerPage, options?: GetMethodOptions): Promise<void> {
+        if (this.currentUserAgent) {
+            await page.setUserAgent(this.currentUserAgent)
         }
 
-        const currentCorsProxyUrl = typeof this.corsProxyUrl === "function" ?
-            this.corsProxyUrl() :
-            this.corsProxyUrl
+        if (options?.javaScriptEnabled !== undefined) {
+            await page.setJavaScriptEnabled(options.javaScriptEnabled)
+        }
+    }
 
-        const currentUserAgent = typeof this.userAgent === "function" ?
-            this.userAgent() :
-            this.userAgent
+    protected extractActions(actions: PuppeteerClientAction[] | undefined): ExtractActionsResult {
+        const actionsBeforeRequest: PuppeteerClientActionFunction[] = []
+        const actionsAfterRequest: PuppeteerClientActionFunction[] = []
 
-        const page = await this.browser!.newPage()
-
-        if (currentUserAgent) {
-            page.setUserAgent(currentUserAgent)
+        if (!actions) {
+            actions = []
         }
 
-        if (typeof urlOrOptions !== "string" && urlOrOptions.javaScriptEnabled) {
-            page.setJavaScriptEnabled(urlOrOptions.javaScriptEnabled ? true : false)
-        }
+        for (const action of actions) {
+            const actionType = typeof action === "function" ? defaultActionType : action.type
+            const actionFunc = typeof action === "function" ? action : action.func
 
-        await page.goto(`${currentCorsProxyUrl ?? ""}${url}`)
-
-        if (typeof urlOrOptions !== "string") {
-            const actions = urlOrOptions.actions ?? []
-
-            for (const action of actions) {
-                await action(page)
+            if (actionType === "beforeRequest") {
+                actionsBeforeRequest.push(actionFunc)
+            } else {
+                actionsAfterRequest.push(actionFunc)
             }
         }
 
+        return {
+            before: actionsBeforeRequest,
+            after: actionsAfterRequest
+        }
+    }
+
+    protected async executeActions(page: PuppeteerPage, actions: PuppeteerClientActionFunction[]): Promise<void> {
+        for (const action of actions) {
+            await action(page)
+        }
+    }
+
+    public async get(urlOrOptions: string | GetMethodOptions): Promise<PageParser> {
+        await this.ensureBrowser()
+
+        let url = typeof urlOrOptions === "string" ? urlOrOptions : urlOrOptions.url
+
+        const {
+            before: actionsBeforeRequest,
+            after: actionsAfterRequest
+        } = this.extractActions(typeof urlOrOptions === "string" ? undefined : urlOrOptions.actions)
+
+        const page = await this.browser!.newPage()
+
+        await this.configurePage(page, typeof urlOrOptions === "string" ? undefined : urlOrOptions)
+        await this.executeActions(page, actionsBeforeRequest)
+        await page.goto(`${this.currentCorsProxyUrl ?? ""}${url}`)
+        await this.executeActions(page, actionsAfterRequest)
         const content = await page.content()
         await page.close()
 
-        return new Page(content)
+        return new PageParser(content)
     }
 
-    public async getAll(urlsOrOptions: string[] | GetAllMethodOptions): Promise<PageSet> {
-        if (!this.browser) {
-            await this.initBrowser()
-        }
+    public async getAll(urlsOrOptions: string[] | GetAllMethodOptions): Promise<PageParserSet> {
+        await this.ensureBrowser()
 
-        const pageSet = new PageSet()
+        const pageSet = new PageParserSet()
 
         for (const urlOrOption of urlsOrOptions) {
             const page = await this.get(urlOrOption)

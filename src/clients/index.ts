@@ -1,8 +1,11 @@
+import PuppeteerClient, { PuppeteerClientAction, PuppeteerClientActionType, PuppeteerClientActionFunction } from "./puppeteer.client"
 import BaseClient, { Client } from "./base.client"
-import PuppeteerClient from "./puppeteer.client"
 import AxiosClient from "./axios.client"
 
 export type {
+    PuppeteerClientActionFunction,
+    PuppeteerClientActionType,
+    PuppeteerClientAction,
     Client
 }
 
