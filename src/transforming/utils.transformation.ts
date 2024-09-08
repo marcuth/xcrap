@@ -1,4 +1,4 @@
-import { NextMiddleware, TransformationMiddleware } from "./transform-data.data-transforming"
+import { NextMiddleware, TransformationMiddleware } from "./data.transforming"
 import { AnyObject } from "../common/types"
 
 export type CallNextOptions<T extends AnyObject> = {

@@ -1,10 +1,12 @@
-import PageParser, { ParsingModel } from "./page.parsing"
+import PageParser, { ParsingModel, ResultData, Extractor } from "./page.parsing"
 import PageParserSet from "./page-set.parsing"
 
 export * from "./extractors.parsing"
 
 export type {
-    ParsingModel
+    ParsingModel,
+    ResultData,
+    Extractor
 }
 
 export {

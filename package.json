@@ -1,11 +1,11 @@
 {
   "name": "xcrap",
   "types": "./dist/index.d.ts",
-  "version": "1.10.1",
+  "version": "1.10.2",
   "description": "Xcrap is a Web Scraping framework for JavaScript, designed to facilitate the process of extracting data from multiple pages or even just one, with a sophisticated page parsing system.",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "node ./dev-scripts/clear-dist-dir.js && tsc && node ./dev-scripts/generate-exports.js",
     "dev": "ts-node index.ts"
   },
   "keywords": [],
@@ -22,5 +22,19 @@
     "fake-useragent": "^1.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
+  },
+  "exports": {
+    "./clients/axios.client": "./clients/axios.client.js",
+    "./clients/base.client": "./clients/base.client.js",
+    "./clients/puppeteer.client": "./clients/puppeteer.client.js",
+    "./common/types": "./common/types.js",
+    "./parsing/extractors.parsing": "./parsing/extractors.parsing.js",
+    "./parsing/page-set.parsing": "./parsing/page-set.parsing.js",
+    "./parsing/page.parsing": "./parsing/page.parsing.js",
+    "./transforming/data.transforming": "./transforming/data.transforming.js",
+    "./transforming/transformers.transformation": "./transforming/transformers.transformation.js",
+    "./transforming/utils.transformation": "./transforming/utils.transformation.js",
+    "./utils/url.util": "./utils/url.util.js",
+    "./xcrap": "./xcrap.js"
   }
 }
