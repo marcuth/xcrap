@@ -22,13 +22,22 @@ function generateExports(dir, base = "") {
         } else if (path.extname(entry) === ".js") {
             const exportPath = `${base}/${entry.replace(".js", "")}`
 
-            if (exportPath !== "/index") {
-                const jsPath = `./dist${exportPath}.js`
-                const dtsPath = `./dist${exportPath}.d.ts`
+            const jsPath = `./dist${exportPath}.js`
+            const mjsPath = `./dist${exportPath}.mjs`
+            const dtsPath = `./dist${exportPath}.d.ts`
 
+            fs.copyFileSync(jsPath, mjsPath)
+
+            if (exportPath !== "/index") {
                 exports[`.${exportPath.replace("/index", "")}`] = {
-                    "import": jsPath,
-                    "types": dtsPath
+                    import: {
+                        default: jsPath,
+                        types: dtsPath
+                    },
+                    require: {
+                        default: mjsPath,
+                        types: dtsPath
+                    }
                 }
             }
         }
@@ -41,8 +50,14 @@ const generatedExports = generateExports(distPath)
 
 packageJson.exports = {
     ".": {
-        "import": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        import: {
+            default: "./dist/index.js",
+            types: "./dist/index.d.ts"
+        },
+        require: {
+            default: "./dist/index.js",
+            types: "./dist/index.d.ts"
+        }
     },
     ...generatedExports
 }
