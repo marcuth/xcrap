@@ -1,6 +1,6 @@
 {
   "name": "xcrap",
-  "version": "1.10.6",
+  "version": "1.10.7",
   "description": "Xcrap is a Web Scraping framework for JavaScript, designed to facilitate the process of extracting data from multiple pages or even just one, with a sophisticated page parsing system.",
   "scripts": {
     "build": "node ./dev-scripts/clear-dist-dir.js && tsc && node ./dev-scripts/generate-exports.js",
