@@ -19,9 +19,18 @@ function generateExports(dir, base = "") {
                 ...exports,
                 ...generateExports(fullPath, `${base}/${entry}`)
             }
-        } else if (path.extname(entry) === ".js" && entry !== "index.js") {
-            const exportPath = `.${base}/${entry.replace(".js", "")}`
-            exports[exportPath] = `${exportPath}.js`
+        } else if (path.extname(entry) === ".js") {
+            const exportPath = `${base}/${entry.replace(".js", "")}`
+
+            if (exportPath !== "/index") {
+                const jsPath = `./dist${exportPath}.js`
+                const dtsPath = `./dist${exportPath}.d.ts`
+
+                exports[`.${exportPath.replace("/index", "")}`] = {
+                    "import": jsPath,
+                    "types": dtsPath
+                }
+            }
         }
     })
 
@@ -31,6 +40,10 @@ function generateExports(dir, base = "") {
 const generatedExports = generateExports(distPath)
 
 packageJson.exports = {
+    ".": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+    },
     ...generatedExports
 }
 

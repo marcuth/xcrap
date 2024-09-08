@@ -1,9 +1,7 @@
 {
   "name": "xcrap",
-  "types": "./dist/index.d.ts",
-  "version": "1.10.2",
+  "version": "1.10.",
   "description": "Xcrap is a Web Scraping framework for JavaScript, designed to facilitate the process of extracting data from multiple pages or even just one, with a sophisticated page parsing system.",
-  "main": "dist/index.js",
   "scripts": {
     "build": "node ./dev-scripts/clear-dist-dir.js && tsc && node ./dev-scripts/generate-exports.js",
     "dev": "ts-node index.ts"
@@ -24,17 +22,73 @@
     "typescript": "^5.5.4"
   },
   "exports": {
-    "./clients/axios.client": "./clients/axios.client.js",
-    "./clients/base.client": "./clients/base.client.js",
-    "./clients/puppeteer.client": "./clients/puppeteer.client.js",
-    "./common/types": "./common/types.js",
-    "./parsing/extractors.parsing": "./parsing/extractors.parsing.js",
-    "./parsing/page-set.parsing": "./parsing/page-set.parsing.js",
-    "./parsing/page.parsing": "./parsing/page.parsing.js",
-    "./transforming/data.transforming": "./transforming/data.transforming.js",
-    "./transforming/transformers.transformation": "./transforming/transformers.transformation.js",
-    "./transforming/utils.transformation": "./transforming/utils.transformation.js",
-    "./utils/url.util": "./utils/url.util.js",
-    "./xcrap": "./xcrap.js"
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./clients/axios.client": {
+      "import": "./dist/clients/axios.client.js",
+      "types": "./dist/clients/axios.client.d.ts"
+    },
+    "./clients/base.client": {
+      "import": "./dist/clients/base.client.js",
+      "types": "./dist/clients/base.client.d.ts"
+    },
+    "./clients": {
+      "import": "./dist/clients/index.js",
+      "types": "./dist/clients/index.d.ts"
+    },
+    "./clients/puppeteer.client": {
+      "import": "./dist/clients/puppeteer.client.js",
+      "types": "./dist/clients/puppeteer.client.d.ts"
+    },
+    "./common/types": {
+      "import": "./dist/common/types.js",
+      "types": "./dist/common/types.d.ts"
+    },
+    "./parsing/extractors.parsing": {
+      "import": "./dist/parsing/extractors.parsing.js",
+      "types": "./dist/parsing/extractors.parsing.d.ts"
+    },
+    "./parsing": {
+      "import": "./dist/parsing/index.js",
+      "types": "./dist/parsing/index.d.ts"
+    },
+    "./parsing/page-set.parsing": {
+      "import": "./dist/parsing/page-set.parsing.js",
+      "types": "./dist/parsing/page-set.parsing.d.ts"
+    },
+    "./parsing/page.parsing": {
+      "import": "./dist/parsing/page.parsing.js",
+      "types": "./dist/parsing/page.parsing.d.ts"
+    },
+    "./transforming/data.transforming": {
+      "import": "./dist/transforming/data.transforming.js",
+      "types": "./dist/transforming/data.transforming.d.ts"
+    },
+    "./transforming": {
+      "import": "./dist/transforming/index.js",
+      "types": "./dist/transforming/index.d.ts"
+    },
+    "./transforming/transformers.transformation": {
+      "import": "./dist/transforming/transformers.transformation.js",
+      "types": "./dist/transforming/transformers.transformation.d.ts"
+    },
+    "./transforming/utils.transformation": {
+      "import": "./dist/transforming/utils.transformation.js",
+      "types": "./dist/transforming/utils.transformation.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
+    },
+    "./utils/url.util": {
+      "import": "./dist/utils/url.util.js",
+      "types": "./dist/utils/url.util.d.ts"
+    },
+    "./xcrap": {
+      "import": "./dist/xcrap.js",
+      "types": "./dist/xcrap.d.ts"
+    }
   }
 }
