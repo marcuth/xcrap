@@ -1,14 +1,13 @@
 {
   "name": "xcrap",
-  "version": "1.10.7",
+  "version": "1.10.9",
   "description": "Xcrap is a Web Scraping framework for JavaScript, designed to facilitate the process of extracting data from multiple pages or even just one, with a sophisticated page parsing system.",
-  "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "npm run clean && rollup -c",
+    "build": "npm run clean && tsc",
     "dev": "ts-node src/index.ts",
     "generate-exports": "node dev-scripts/generate-exports.cjs"
   },
@@ -21,15 +20,11 @@
     "puppeteer": "^23.3.0"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^26.0.1",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-typescript": "^11.1.6",
     "@types/fake-useragent": "^1.0.0",
     "@types/node": "^20.16.5",
     "fake-useragent": "^1.0.1",
     "microbundle": "^0.15.1",
     "rimraf": "^6.0.1",
-    "rollup": "^2.79.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   },
@@ -39,88 +34,88 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./clients/axios.client": {
-      "import": "./dist/clients/axios.client.mjs",
-      "require": "./dist/clients/axios.client.cjs",
+      "import": "./dist/clients/axios.client.js",
+      "require": "./dist/clients/axios.client.js",
       "types": "./dist/clients/axios.client.d.ts"
     },
     "./clients/base.client": {
-      "import": "./dist/clients/base.client.mjs",
-      "require": "./dist/clients/base.client.cjs",
+      "import": "./dist/clients/base.client.js",
+      "require": "./dist/clients/base.client.js",
       "types": "./dist/clients/base.client.d.ts"
     },
     "./clients": {
-      "import": "./dist/clients/index.mjs",
-      "require": "./dist/clients/index.cjs",
+      "import": "./dist/clients/index.js",
+      "require": "./dist/clients/index.js",
       "types": "./dist/clients/index.d.ts"
     },
     "./clients/puppeteer.client": {
-      "import": "./dist/clients/puppeteer.client.mjs",
-      "require": "./dist/clients/puppeteer.client.cjs",
+      "import": "./dist/clients/puppeteer.client.js",
+      "require": "./dist/clients/puppeteer.client.js",
       "types": "./dist/clients/puppeteer.client.d.ts"
     },
     "./common/types": {
-      "import": "./dist/common/types.mjs",
-      "require": "./dist/common/types.cjs",
+      "import": "./dist/common/types.js",
+      "require": "./dist/common/types.js",
       "types": "./dist/common/types.d.ts"
     },
     "./parsing/extractors.parsing": {
-      "import": "./dist/parsing/extractors.parsing.mjs",
-      "require": "./dist/parsing/extractors.parsing.cjs",
+      "import": "./dist/parsing/extractors.parsing.js",
+      "require": "./dist/parsing/extractors.parsing.js",
       "types": "./dist/parsing/extractors.parsing.d.ts"
     },
     "./parsing": {
-      "import": "./dist/parsing/index.mjs",
-      "require": "./dist/parsing/index.cjs",
+      "import": "./dist/parsing/index.js",
+      "require": "./dist/parsing/index.js",
       "types": "./dist/parsing/index.d.ts"
     },
     "./parsing/page-set.parsing": {
-      "import": "./dist/parsing/page-set.parsing.mjs",
-      "require": "./dist/parsing/page-set.parsing.cjs",
+      "import": "./dist/parsing/page-set.parsing.js",
+      "require": "./dist/parsing/page-set.parsing.js",
       "types": "./dist/parsing/page-set.parsing.d.ts"
     },
     "./parsing/page.parsing": {
-      "import": "./dist/parsing/page.parsing.mjs",
-      "require": "./dist/parsing/page.parsing.cjs",
+      "import": "./dist/parsing/page.parsing.js",
+      "require": "./dist/parsing/page.parsing.js",
       "types": "./dist/parsing/page.parsing.d.ts"
     },
     "./transforming/data.transforming": {
-      "import": "./dist/transforming/data.transforming.mjs",
-      "require": "./dist/transforming/data.transforming.cjs",
+      "import": "./dist/transforming/data.transforming.js",
+      "require": "./dist/transforming/data.transforming.js",
       "types": "./dist/transforming/data.transforming.d.ts"
     },
     "./transforming": {
-      "import": "./dist/transforming/index.mjs",
-      "require": "./dist/transforming/index.cjs",
+      "import": "./dist/transforming/index.js",
+      "require": "./dist/transforming/index.js",
       "types": "./dist/transforming/index.d.ts"
     },
     "./transforming/transformers.transformation": {
-      "import": "./dist/transforming/transformers.transformation.mjs",
-      "require": "./dist/transforming/transformers.transformation.cjs",
+      "import": "./dist/transforming/transformers.transformation.js",
+      "require": "./dist/transforming/transformers.transformation.js",
       "types": "./dist/transforming/transformers.transformation.d.ts"
     },
     "./transforming/utils.transformation": {
-      "import": "./dist/transforming/utils.transformation.mjs",
-      "require": "./dist/transforming/utils.transformation.cjs",
+      "import": "./dist/transforming/utils.transformation.js",
+      "require": "./dist/transforming/utils.transformation.js",
       "types": "./dist/transforming/utils.transformation.d.ts"
     },
     "./utils": {
-      "import": "./dist/utils/index.mjs",
-      "require": "./dist/utils/index.cjs",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.js",
       "types": "./dist/utils/index.d.ts"
     },
     "./utils/url.util": {
-      "import": "./dist/utils/url.util.mjs",
-      "require": "./dist/utils/url.util.cjs",
+      "import": "./dist/utils/url.util.js",
+      "require": "./dist/utils/url.util.js",
       "types": "./dist/utils/url.util.d.ts"
     },
     "./xcrap": {
-      "import": "./dist/xcrap.mjs",
-      "require": "./dist/xcrap.cjs",
+      "import": "./dist/xcrap.js",
+      "require": "./dist/xcrap.js",
       "types": "./dist/xcrap.d.ts"
     }
   }
