@@ -1,7 +1,7 @@
 const fs = require("fs")
 const path = require("path")
 
-const distPath = path.join(__dirname, "..", "dist")
+const distPath = path.join(__dirname, "..", "src")
 
 const packageJsonPath = path.join(__dirname, "..", "package.json")
 const packageJson = require(packageJsonPath)
@@ -19,25 +19,18 @@ function generateExports(dir, base = "") {
                 ...exports,
                 ...generateExports(fullPath, `${base}/${entry}`)
             }
-        } else if (path.extname(entry) === ".js") {
-            const exportPath = `${base}/${entry.replace(".js", "")}`
+        } else if (path.extname(entry) === ".ts") {
+            const exportPath = `${base}/${entry.replace(".ts", "")}`
 
-            const jsPath = `./dist${exportPath}.js`
+            const jsPath = `./dist${exportPath}.cjs`
             const mjsPath = `./dist${exportPath}.mjs`
             const dtsPath = `./dist${exportPath}.d.ts`
 
-            fs.copyFileSync(jsPath, mjsPath)
-
             if (exportPath !== "/index") {
                 exports[`.${exportPath.replace("/index", "")}`] = {
-                    import: {
-                        default: jsPath,
-                        types: dtsPath
-                    },
-                    require: {
-                        default: mjsPath,
-                        types: dtsPath
-                    }
+                    import: mjsPath,
+                    require: jsPath,
+                    types: dtsPath
                 }
             }
         }
@@ -50,14 +43,9 @@ const generatedExports = generateExports(distPath)
 
 packageJson.exports = {
     ".": {
-        import: {
-            default: "./dist/index.js",
-            types: "./dist/index.d.ts"
-        },
-        require: {
-            default: "./dist/index.js",
-            types: "./dist/index.d.ts"
-        }
+        import: "./dist/index.mjs",
+        require: "./dist/index.cjs",
+        types: "./dist/index.d.ts",
     },
     ...generatedExports
 }

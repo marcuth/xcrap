@@ -109,7 +109,7 @@ class PageParser {
         const document = htmlParser.parse(this.source)
         const items = document.querySelectorAll(query)
 
-        let dataSet = items.map((item, index) => {
+        let dataSet: (undefined | ResultData<ParsingModelType>)[] = items.map((item, index) => {
             if (limit != undefined && index >= limit) return
             const data = this.processParsingModel(item, model)
             return data
@@ -119,7 +119,7 @@ class PageParser {
             dataSet = dataSet.slice(0, limit)
         }
 
-        return dataSet
+        return dataSet as ResultData<ParsingModelType>[]
     }
 
     public parseItem<ParsingModelType extends ParsingModel>({
