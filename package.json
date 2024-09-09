@@ -6,9 +6,9 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "clean": "rimraf dist",
-    "build": "npm run clean && tsc",
-    "dev": "ts-node src/index.ts",
+    "build:clean": "rimraf dist",
+    "compile": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json",
+    "build": "npm-run-all build:clean compile generate-exports && node ./dev-scripts/prepare-package-json.js",
     "generate-exports": "node dev-scripts/generate-exports.cjs"
   },
   "keywords": [],
@@ -24,6 +24,7 @@
     "@types/node": "^20.16.5",
     "fake-useragent": "^1.0.1",
     "microbundle": "^0.15.1",
+    "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
@@ -36,87 +37,104 @@
     ".": {
       "import": "./dist/index.js",
       "require": "./dist/index.js",
+      "default": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./clients/axios.client": {
-      "import": "./dist/clients/axios.client.js",
-      "require": "./dist/clients/axios.client.js",
-      "types": "./dist/clients/axios.client.d.ts"
+      "import": "./dist/esm/clients/axios.client.js",
+      "require": "./dist/cjs/clients/axios.client.js",
+      "default": "./dist/esm/clients/axios.client.js",
+      "types": "./dist/types/clients/axios.client.d.ts"
     },
     "./clients/base.client": {
-      "import": "./dist/clients/base.client.js",
-      "require": "./dist/clients/base.client.js",
-      "types": "./dist/clients/base.client.d.ts"
+      "import": "./dist/esm/clients/base.client.js",
+      "require": "./dist/cjs/clients/base.client.js",
+      "default": "./dist/esm/clients/base.client.js",
+      "types": "./dist/types/clients/base.client.d.ts"
     },
     "./clients": {
-      "import": "./dist/clients/index.js",
-      "require": "./dist/clients/index.js",
-      "types": "./dist/clients/index.d.ts"
+      "import": "./dist/esm/clients/index.js",
+      "require": "./dist/cjs/clients/index.js",
+      "default": "./dist/esm/clients/index.js",
+      "types": "./dist/types/clients/index.d.ts"
     },
     "./clients/puppeteer.client": {
-      "import": "./dist/clients/puppeteer.client.js",
-      "require": "./dist/clients/puppeteer.client.js",
-      "types": "./dist/clients/puppeteer.client.d.ts"
+      "import": "./dist/esm/clients/puppeteer.client.js",
+      "require": "./dist/cjs/clients/puppeteer.client.js",
+      "default": "./dist/esm/clients/puppeteer.client.js",
+      "types": "./dist/types/clients/puppeteer.client.d.ts"
     },
     "./common/types": {
-      "import": "./dist/common/types.js",
-      "require": "./dist/common/types.js",
-      "types": "./dist/common/types.d.ts"
+      "import": "./dist/esm/common/types.js",
+      "require": "./dist/cjs/common/types.js",
+      "default": "./dist/esm/common/types.js",
+      "types": "./dist/types/common/types.d.ts"
     },
     "./parsing/extractors.parsing": {
-      "import": "./dist/parsing/extractors.parsing.js",
-      "require": "./dist/parsing/extractors.parsing.js",
-      "types": "./dist/parsing/extractors.parsing.d.ts"
+      "import": "./dist/esm/parsing/extractors.parsing.js",
+      "require": "./dist/cjs/parsing/extractors.parsing.js",
+      "default": "./dist/esm/parsing/extractors.parsing.js",
+      "types": "./dist/types/parsing/extractors.parsing.d.ts"
     },
     "./parsing": {
-      "import": "./dist/parsing/index.js",
-      "require": "./dist/parsing/index.js",
-      "types": "./dist/parsing/index.d.ts"
+      "import": "./dist/esm/parsing/index.js",
+      "require": "./dist/cjs/parsing/index.js",
+      "default": "./dist/esm/parsing/index.js",
+      "types": "./dist/types/parsing/index.d.ts"
     },
     "./parsing/page-set.parsing": {
-      "import": "./dist/parsing/page-set.parsing.js",
-      "require": "./dist/parsing/page-set.parsing.js",
-      "types": "./dist/parsing/page-set.parsing.d.ts"
+      "import": "./dist/esm/parsing/page-set.parsing.js",
+      "require": "./dist/cjs/parsing/page-set.parsing.js",
+      "default": "./dist/esm/parsing/page-set.parsing.js",
+      "types": "./dist/types/parsing/page-set.parsing.d.ts"
     },
     "./parsing/page.parsing": {
-      "import": "./dist/parsing/page.parsing.js",
-      "require": "./dist/parsing/page.parsing.js",
-      "types": "./dist/parsing/page.parsing.d.ts"
+      "import": "./dist/esm/parsing/page.parsing.js",
+      "require": "./dist/cjs/parsing/page.parsing.js",
+      "default": "./dist/esm/parsing/page.parsing.js",
+      "types": "./dist/types/parsing/page.parsing.d.ts"
     },
     "./transforming/data.transforming": {
-      "import": "./dist/transforming/data.transforming.js",
-      "require": "./dist/transforming/data.transforming.js",
-      "types": "./dist/transforming/data.transforming.d.ts"
+      "import": "./dist/esm/transforming/data.transforming.js",
+      "require": "./dist/cjs/transforming/data.transforming.js",
+      "default": "./dist/esm/transforming/data.transforming.js",
+      "types": "./dist/types/transforming/data.transforming.d.ts"
     },
     "./transforming": {
-      "import": "./dist/transforming/index.js",
-      "require": "./dist/transforming/index.js",
-      "types": "./dist/transforming/index.d.ts"
+      "import": "./dist/esm/transforming/index.js",
+      "require": "./dist/cjs/transforming/index.js",
+      "default": "./dist/esm/transforming/index.js",
+      "types": "./dist/types/transforming/index.d.ts"
     },
     "./transforming/transformers.transformation": {
-      "import": "./dist/transforming/transformers.transformation.js",
-      "require": "./dist/transforming/transformers.transformation.js",
-      "types": "./dist/transforming/transformers.transformation.d.ts"
+      "import": "./dist/esm/transforming/transformers.transformation.js",
+      "require": "./dist/cjs/transforming/transformers.transformation.js",
+      "default": "./dist/esm/transforming/transformers.transformation.js",
+      "types": "./dist/types/transforming/transformers.transformation.d.ts"
     },
     "./transforming/utils.transformation": {
-      "import": "./dist/transforming/utils.transformation.js",
-      "require": "./dist/transforming/utils.transformation.js",
-      "types": "./dist/transforming/utils.transformation.d.ts"
+      "import": "./dist/esm/transforming/utils.transformation.js",
+      "require": "./dist/cjs/transforming/utils.transformation.js",
+      "default": "./dist/esm/transforming/utils.transformation.js",
+      "types": "./dist/types/transforming/utils.transformation.d.ts"
     },
     "./utils": {
-      "import": "./dist/utils/index.js",
-      "require": "./dist/utils/index.js",
-      "types": "./dist/utils/index.d.ts"
+      "import": "./dist/esm/utils/index.js",
+      "require": "./dist/cjs/utils/index.js",
+      "default": "./dist/esm/utils/index.js",
+      "types": "./dist/types/utils/index.d.ts"
     },
     "./utils/url.util": {
-      "import": "./dist/utils/url.util.js",
-      "require": "./dist/utils/url.util.js",
-      "types": "./dist/utils/url.util.d.ts"
+      "import": "./dist/esm/utils/url.util.js",
+      "require": "./dist/cjs/utils/url.util.js",
+      "default": "./dist/esm/utils/url.util.js",
+      "types": "./dist/types/utils/url.util.d.ts"
     },
     "./xcrap": {
-      "import": "./dist/xcrap.js",
-      "require": "./dist/xcrap.js",
-      "types": "./dist/xcrap.d.ts"
+      "import": "./dist/esm/xcrap.js",
+      "require": "./dist/cjs/xcrap.js",
+      "default": "./dist/esm/xcrap.js",
+      "types": "./dist/types/xcrap.d.ts"
     }
   }
 }

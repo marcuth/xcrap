@@ -22,13 +22,15 @@ function generateExports(dir, base = "") {
         } else if (path.extname(entry) === ".ts") {
             const exportPath = `${base}/${entry.replace(".ts", "")}`
 
-            const jsPath = `./dist${exportPath}.js`
-            const dtsPath = `./dist${exportPath}.d.ts`
+            const cjsPath = `./dist/cjs${exportPath}.js`
+            const esmPath = `./dist/esm${exportPath}.js`
+            const dtsPath = `./dist/types${exportPath}.d.ts`
 
             if (exportPath !== "/index") {
                 exports[`.${exportPath.replace("/index", "")}`] = {
-                    import: jsPath,
-                    require: jsPath,
+                    import: esmPath,
+                    require: cjsPath,
+                    default: esmPath,
                     types: dtsPath
                 }
             }
@@ -44,6 +46,7 @@ packageJson.exports = {
     ".": {
         import: "./dist/index.js",
         require: "./dist/index.js",
+        default: "./dist/index.js",
         types: "./dist/index.d.ts",
     },
     ...generatedExports
