@@ -15,6 +15,15 @@ function createEsmModulePackageJson() {
                         new Uint8Array(Buffer.from('{"type": "module"}')),
                     )
                 }
+            } else if (dir == "cjs") {
+                const packageJsonFile = path.join(distDir, dir, "/package.json")
+
+                if (!fs.existsSync(packageJsonFile)) {
+                    fs.writeFileSync(
+                        packageJsonFile,
+                        new Uint8Array(Buffer.from('{"type": "commonjs"}')),
+                    )
+                }
             }
         })
 }
