@@ -38,7 +38,7 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         this.options = options
         this.browser = undefined
     }
-
+    
     protected async initBrowser(): Promise<void> {
         const puppeteerArguments: string[] = []
 

@@ -1,4 +1,4 @@
-import htmlParser, { HTMLElement } from "node-html-parser"
+import htmlParser, { HTMLElement, Options as NodeHtmlParserOptions } from "node-html-parser"
 
 export type ResultData<T> = {
     [K in keyof T]: T[K] extends { fieldType: "multiple" }
@@ -52,11 +52,33 @@ export type ParseOneOptions = {
     extractor: Extractor
 }
 
+export const defaultPageParseOptions = {
+    lowerCaseTagName: false,
+    comment: false,
+    fixNestedATags: true,
+    parseNoneClosedTags: true,
+    voidTag: {
+        tags: ["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"],
+        closingSlash: true
+    },
+    blockTextElements: {
+        script: true,
+        noscript: true,
+        style: true,
+        pre: true
+    }
+}
+
 class PageParser {
     public readonly source: string
+    public readonly document: HTMLElement
 
-    public constructor(source: string) {
+    public constructor(
+        source: string,
+        options: Partial<NodeHtmlParserOptions> = defaultPageParseOptions
+    ) {
         this.source = source
+        this.document = htmlParser.parse(this.source, options)
     }
 
     private processParsingModel<ParsingModelType extends ParsingModel>(element: HTMLElement, model: ParsingModelType): ResultData<ParsingModelType> {
@@ -106,8 +128,7 @@ class PageParser {
         model,
         limit
     }: ParseItemGroupOptions<ParsingModelType>): ResultData<ParsingModelType>[] {
-        const document = htmlParser.parse(this.source)
-        const items = document.querySelectorAll(query)
+        const items = this.document.querySelectorAll(query)
 
         let dataSet: (undefined | ResultData<ParsingModelType>)[] = items.map((item, index) => {
             if (limit != undefined && index >= limit) return
@@ -135,8 +156,7 @@ class PageParser {
                 limit: 1
             })[0]
         } else {
-            const document = htmlParser.parse(this.source)
-            item = this.processParsingModel(document, model)
+            item = this.processParsingModel(this.document, model)
         }
 
         return item
@@ -147,8 +167,7 @@ class PageParser {
         extractor,
         limit
     }: ParseAllOptions): string[] {
-        const document = htmlParser.parse(this.source)
-        const elements = document.querySelectorAll(query)
+        const elements = this.document.querySelectorAll(query)
 
         let dataSet: string[] = []
 
@@ -174,8 +193,7 @@ class PageParser {
                 limit: 1
             })[0]
         } else {
-            const document = htmlParser.parse(this.source)
-            data = extractor(document)
+            data = extractor(this.document)
         }
 
         return data
