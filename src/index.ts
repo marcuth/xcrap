@@ -1,3 +1,7 @@
+import { AxiosClient } from "./clients"
 import Xcrap from "./xcrap"
 
-export default Xcrap
+const xcrap = Xcrap.createDefault()
+
+export { Xcrap }
+export default xcrap

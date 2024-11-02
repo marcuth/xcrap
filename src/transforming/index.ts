@@ -1,7 +1,7 @@
 import transformData, { TransformationModel } from "./data.transforming"
 
-export * from "./utils.transformation"
-export * from "./transformers.transformation"
+export * from "./utils.transforming"
+export * from "./transformers.transforming"
 
 export type { TransformationModel }
 export { transformData }

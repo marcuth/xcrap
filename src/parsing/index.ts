@@ -1,5 +1,5 @@
-import PageParser, { ParsingModel, ResultData, Extractor } from "./page.parsing"
-import PageParserSet from "./page-set.parsing"
+import PageParser, { ParsingModel, ResultData, Extractor } from "./page-parser.parsing"
+import PageParserSet from "./page-parser-set.parsing"
 
 export * from "./extractors.parsing"
 
@@ -14,4 +14,4 @@ export {
     PageParser
 }
 
-export * from "./page-set.parsing"
+export * from "./page-parser-set.parsing"

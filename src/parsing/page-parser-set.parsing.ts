@@ -1,4 +1,4 @@
-import PageParser, { ParsingModel, Extractor, ResultData } from "./page.parsing"
+import PageParser, { ParsingModel, Extractor, ResultData } from "./page-parser.parsing"
 
 export type ParseItemGroupForAllOptions<ParsingModelType> = {
     query: string

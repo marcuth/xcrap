@@ -1,11 +1,11 @@
-import puppeteer, { Browser, Page as PuppeteerPage, PuppeteerLaunchOptions } from "puppeteer"
+import puppeteer, { Browser, Page, PuppeteerLaunchOptions } from "puppeteer"
 
 import BaseClient, { Client, ClientOptions } from "./base.client"
 import { PageParserSet, PageParser } from "../parsing"
 
 export type PuppeteerProxy = string
 export type PuppeteerClientOptions = ClientOptions<PuppeteerProxy> & PuppeteerLaunchOptions & {}
-export type PuppeteerClientActionFunction = (page: PuppeteerPage) => any | Promise<any>
+export type PuppeteerClientActionFunction = (page: Page) => any | Promise<any>
 export type PuppeteerClientActionType = "beforeRequest" | "afterRequest"
 
 export type PuppeteerClientAction = PuppeteerClientActionFunction | {
@@ -70,7 +70,7 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         }
     }
 
-    protected async configurePage(page: PuppeteerPage, options?: GetMethodOptions): Promise<void> {
+    protected async configurePage(page: Page, options?: GetMethodOptions): Promise<void> {
         if (this.currentUserAgent) {
             await page.setUserAgent(this.currentUserAgent)
         }
@@ -105,7 +105,7 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         }
     }
 
-    protected async executeActions(page: PuppeteerPage, actions: PuppeteerClientActionFunction[]): Promise<void> {
+    protected async executeActions(page: Page, actions: PuppeteerClientActionFunction[]): Promise<void> {
         for (const action of actions) {
             await action(page)
         }

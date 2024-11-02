@@ -44,10 +44,10 @@ const generatedExports = generateExports(distPath)
 
 packageJson.exports = {
     ".": {
-        import: "./dist/index.js",
-        require: "./dist/index.js",
-        default: "./dist/index.js",
-        types: "./dist/index.d.ts",
+        import: "./dist/esm/index.js",
+        require: "./dist/esm/index.js",
+        default: "./dist/esm/index.js",
+        types: "./dist/types/index.d.ts",
     },
     ...generatedExports
 }

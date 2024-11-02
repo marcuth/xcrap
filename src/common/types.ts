@@ -1,3 +1,1 @@
-export type AnyObject = {
-    [key: string]: any
-}
+export type AnyObject = Record<string, any>

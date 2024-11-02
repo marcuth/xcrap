@@ -1,4 +1,4 @@
-import PageParser, { Extractor, ParsingModel, ResultData } from "./parsing/page.parsing"
+import PageParser, { Extractor, ParsingModel, ResultData } from "./parsing/page-parser.parsing"
 import { Client } from "./clients/base.client"
 import { AxiosClient } from "./clients"
 
@@ -7,8 +7,8 @@ export type Tracker = {
     extractor: Extractor
 }
 
-export type XcrapOptions = {
-    client: Client
+export type XcrapOptions<T> = {
+    client: T
 }
 
 export type ScrapeOptions<ParsingModelType> = {
@@ -35,16 +35,16 @@ export type GetPaginationUrlsWithRangeOptions = {
     paginationRange: [number, number]
 }
 
-class Xcrap {
-    public client: Client
+class Xcrap<T extends Client> {
+    public readonly client: T
 
-    public constructor({ client }: XcrapOptions) {
+    public constructor({ client }: XcrapOptions<T>) {
         this.client = client
     }
 
-    public static createDefault() {
+    public static createDefault(): Xcrap<AxiosClient> {
         const client = new AxiosClient()
-        return new Xcrap({ client: client })
+        return new Xcrap<AxiosClient>({ client: client })
     }
 
     public getPaginationUrlsWithRange({

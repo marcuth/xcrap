@@ -1,6 +1,6 @@
 {
   "name": "xcrap",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "description": "Xcrap is a Web Scraping framework for JavaScript, designed to facilitate the process of extracting data from multiple pages or even just one, with a sophisticated page parsing system.",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -9,7 +9,8 @@
     "build:clean": "rimraf dist",
     "compile": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json",
     "build": "npm-run-all build:clean compile generate-exports && node ./dev-scripts/prepare-package-json.js",
-    "generate-exports": "node dev-scripts/generate-exports.cjs"
+    "generate-exports": "node dev-scripts/generate-exports.cjs",
+    "test": "jest"
   },
   "keywords": [],
   "author": "Marcuth",
@@ -35,10 +36,10 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "default": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/esm/index.js",
+      "require": "./dist/esm/index.js",
+      "default": "./dist/esm/index.js",
+      "types": "./dist/types/index.d.ts"
     },
     "./clients/axios.client": {
       "import": "./dist/esm/clients/axios.client.js",
