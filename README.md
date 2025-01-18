@@ -1,3 +1,79 @@
-# Xcrap: A JavaScript Web Scraping Framework
+# Xcrap: A Web Scraping Framework for JavaScript
 
-Xcrap is a Web Scraping framework for JavaScript, designed to facilitate the process of extracting data from multiple pages or even just one, with a sophisticated page parsing system.
+Xcrap is a framework written in TypeScript to handle data extraction in web pages.
+
+---
+
+Data extraction works based on two types of models:
+
+## ParsingModel
+
+Each model key receives a `query` which is a CSS selector, and an `extractor` which is a function that will extract a certain property from an HTML element. It also accepts that the field has multiple results by passing the information in the `fieldType`, the model also supports alignment, so you can put models inside models to obtain a complex data structure, you can also define that it is a group of objects through the `isGroup` property, but don't get too attached to the resulting data structure.
+
+## TransformationModel
+
+Each model key receives an array of functions called `middlewares`. These `middlewares` work in a similar way to those we are used to when creating a backend server, I may or may not call the next middleware. It is not necessary for the key to actually exist in the `ParsingModel` you used for data extraction, each function will receive an object containing all the keys from the extraction result, so structure the data however you want.
+
+## Clients
+
+### Default Clients
+
+Xcrap comes by default with two clients, `AxiosClient` and `PuppeteerClient` which respectively use [`Axios`](https://npmjs.com/package/axios) and [`Puppeteer`](https://www.npmjs.com/package/puppeteer) to handle HTTP requests and retrieve the HTML of a website.
+
+---
+
+###  Custom Clients
+
+If you want to use another library to handle HTTP requests or even customize something that happens from one request to another, you can make your own custom client by extending the `BaseClient` class.
+
+Here is an example of how [`PuppeteerExtaClient` (xcrap-puppeteer-extra-client)](https://www.npmjs.com/package/xcrap-puppeteer-extra-client) was made:
+
+```ts
+import { PuppeteerClientOptions } from "xcrap/dist/clients/puppeteer.client"
+import puppeteer,  { PuppeteerExtraPlugin } from "puppeteer-extra"
+import { PuppeteerClient } from "xcrap"
+
+export type PuppeteerExtraClientOptions = PuppeteerClientOptions & {
+    plugins?: PuppeteerExtraPlugin[]
+}
+
+class PuppeteerExtraClient extends PuppeteerClient {
+    public constructor(options: PuppeteerExtraClientOptions = {}) {
+        super(options)
+
+        if (options.plugins) {
+            for (const plugin of options.plugins) {
+                this.usePlugin(plugin)
+            }
+        }
+    }
+
+    protected async initBrowser(): Promise<void> {
+        const puppeteerArguments: string[] = []
+
+        if (this.proxy) {
+            const currentProxy = typeof this.proxy === "function" ?
+                this.proxy() :
+                this.proxy
+
+            puppeteerArguments.push(`--proxy-server=${currentProxy}`)
+        }
+
+        if (this.options.args && this.options.args.length > 0) {
+            puppeteerArguments.push(...this.options.args)
+        }
+
+        this.browser = await puppeteer.launch({
+            ...this.options,
+            args: puppeteerArguments,
+            headless: this.options.headless ? "shell" : false
+        })
+    }
+
+    public usePlugin(plugin: PuppeteerExtraPlugin): void {
+        puppeteer.use(plugin)
+    }
+}
+
+export default PuppeteerExtraClient
+```
