@@ -9,8 +9,7 @@
     "build:clean": "rimraf dist",
     "compile": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json",
     "build": "npm-run-all build:clean compile generate-exports && node ./dev-scripts/prepare-package-json.js",
-    "generate-exports": "node dev-scripts/generate-exports.cjs",
-    "test": "jest"
+    "generate-exports": "node dev-scripts/generate-exports.cjs"
   },
   "keywords": [],
   "author": "Marcuth",
