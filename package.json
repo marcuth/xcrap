@@ -90,17 +90,17 @@
       "default": "./dist/esm/parsing/index.js",
       "types": "./dist/types/parsing/index.d.ts"
     },
-    "./parsing/page-set.parsing": {
-      "import": "./dist/esm/parsing/page-set.parsing.js",
-      "require": "./dist/cjs/parsing/page-set.parsing.js",
-      "default": "./dist/esm/parsing/page-set.parsing.js",
-      "types": "./dist/types/parsing/page-set.parsing.d.ts"
+    "./parsing/page-parser-set.parsing": {
+      "import": "./dist/esm/parsing/page-parser-set.parsing.js",
+      "require": "./dist/cjs/parsing/page-parser-set.parsing.js",
+      "default": "./dist/esm/parsing/page-parser-set.parsing.js",
+      "types": "./dist/types/parsing/page-parser-set.parsing.d.ts"
     },
-    "./parsing/page.parsing": {
-      "import": "./dist/esm/parsing/page.parsing.js",
-      "require": "./dist/cjs/parsing/page.parsing.js",
-      "default": "./dist/esm/parsing/page.parsing.js",
-      "types": "./dist/types/parsing/page.parsing.d.ts"
+    "./parsing/page-parser.parsing": {
+      "import": "./dist/esm/parsing/page-parser.parsing.js",
+      "require": "./dist/cjs/parsing/page-parser.parsing.js",
+      "default": "./dist/esm/parsing/page-parser.parsing.js",
+      "types": "./dist/types/parsing/page-parser.parsing.d.ts"
     },
     "./transforming/data.transforming": {
       "import": "./dist/esm/transforming/data.transforming.js",
@@ -114,17 +114,17 @@
       "default": "./dist/esm/transforming/index.js",
       "types": "./dist/types/transforming/index.d.ts"
     },
-    "./transforming/transformers.transformation": {
-      "import": "./dist/esm/transforming/transformers.transformation.js",
-      "require": "./dist/cjs/transforming/transformers.transformation.js",
-      "default": "./dist/esm/transforming/transformers.transformation.js",
-      "types": "./dist/types/transforming/transformers.transformation.d.ts"
+    "./transforming/transformers.transforming": {
+      "import": "./dist/esm/transforming/transformers.transforming.js",
+      "require": "./dist/cjs/transforming/transformers.transforming.js",
+      "default": "./dist/esm/transforming/transformers.transforming.js",
+      "types": "./dist/types/transforming/transformers.transforming.d.ts"
     },
-    "./transforming/utils.transformation": {
-      "import": "./dist/esm/transforming/utils.transformation.js",
-      "require": "./dist/cjs/transforming/utils.transformation.js",
-      "default": "./dist/esm/transforming/utils.transformation.js",
-      "types": "./dist/types/transforming/utils.transformation.d.ts"
+    "./transforming/utils.transforming": {
+      "import": "./dist/esm/transforming/utils.transforming.js",
+      "require": "./dist/cjs/transforming/utils.transforming.js",
+      "default": "./dist/esm/transforming/utils.transforming.js",
+      "types": "./dist/types/transforming/utils.transforming.d.ts"
     },
     "./utils": {
       "import": "./dist/esm/utils/index.js",
