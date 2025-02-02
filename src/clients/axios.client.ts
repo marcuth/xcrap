@@ -1,12 +1,20 @@
-import axios, { Axios, AxiosProxyConfig, AxiosRequestConfig, InternalAxiosRequestConfig } from "axios"
+import axios, { Axios, AxiosInterceptorManager, AxiosProxyConfig, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios"
 
 import BaseClient, { Client, ClientOptions, defaultUserAgent } from "./base.client"
 import { PageParserSet, PageParser } from "../parsing"
 
-export type AxiosClientOptions = ClientOptions<AxiosProxyConfig>
+export type AxiosClientOptions = ClientOptions<AxiosProxyConfig> & {
+    withCredentials?: boolean
+}
+
+export type AxiosInterceptors = {
+    request: AxiosInterceptorManager<InternalAxiosRequestConfig>
+    response: AxiosInterceptorManager<AxiosResponse>
+}
 
 class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
     protected client: Axios
+    public interceptors: AxiosInterceptors
 
     public constructor(options: AxiosClientOptions = {}) {
         super(options)
@@ -15,24 +23,23 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
             proxy: this.currentProxy,
             headers: {
                 "User-Agent": this.currentUserAgent ?? defaultUserAgent
-            }
+            },
+            ...(options.withCredentials && { withCredentials: options.withCredentials })
         })
 
         this.client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-            return this.interceptRequest.bind(this)(config)
+            config.proxy = this.currentProxy
+
+            if (config.headers) {
+                config.headers["User-Agent"] = this.currentUserAgent ?? defaultUserAgent
+            } else {
+                (config as AxiosRequestConfig).headers = { "User-Agent": this.currentUserAgent }
+            }
+
+            return config
         })
-    }
 
-    protected interceptRequest(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {        
-        config.proxy = this.currentProxy
-
-        if (config.headers) {
-            config.headers["User-Agent"] = this.currentUserAgent ?? defaultUserAgent
-        } else {
-            (config as AxiosRequestConfig).headers = { "User-Agent": this.currentUserAgent }
-        }
-
-        return config
+        this.interceptors = this.client.interceptors
     }
 
     public async fetchPageSource(url: string): Promise<string> {

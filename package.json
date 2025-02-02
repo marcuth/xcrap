@@ -9,9 +9,13 @@
     "build:clean": "rimraf dist",
     "compile": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json",
     "build": "npm-run-all build:clean compile generate-exports && node ./dev-scripts/prepare-package-json.js",
-    "generate-exports": "node dev-scripts/generate-exports.cjs"
+    "generate-exports": "node dev-scripts/generate-exports.cjs",
+    "test": "jest"
   },
-  "keywords": ["web scraping", "xcrap"],
+  "keywords": [
+    "web scraping",
+    "xcrap"
+  ],
   "author": "Marcuth",
   "license": "MIT",
   "dependencies": {
@@ -21,11 +25,15 @@
   },
   "devDependencies": {
     "@types/fake-useragent": "^1.0.0",
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.16.5",
+    "axios-mock-adapter": "^2.1.0",
     "fake-useragent": "^1.0.1",
+    "jest": "^29.7.0",
     "microbundle": "^0.15.1",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
+    "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   },
