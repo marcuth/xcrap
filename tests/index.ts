@@ -40,7 +40,8 @@ import { AxiosClient } from "../src/clients"
         auth: {
             username: "batat",
             password: "dasdasdasd"
-        } 
+        },
+        
     })
 
     console.log(parser.source)
