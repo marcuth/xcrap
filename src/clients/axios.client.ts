@@ -12,6 +12,10 @@ export type AxiosInterceptors = {
     response: AxiosInterceptorManager<AxiosResponse>
 }
 
+export type UrlOrOptions = string | AxiosRequestConfig & {
+    url: string
+}
+
 class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
     protected client: Axios
     public interceptors: AxiosInterceptors
@@ -42,19 +46,21 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
         this.interceptors = this.client.interceptors
     }
 
-    public async fetchPageSource(url: string): Promise<string> {
-        const response = await this.client.get(url)
+    public async fetchPageSource(urlOrOptions: UrlOrOptions): Promise<string> {
+        const url = typeof urlOrOptions === "string" ? urlOrOptions : urlOrOptions.url
+        const { url: _, ...options } = typeof urlOrOptions === "string" ? { url: undefined } : urlOrOptions
+        const response = await this.client.get(`${this.currentCorsProxyUrl ?? ""}${url}`, options)
         return response.data as string
     }
 
-    public async get(url: string): Promise<PageParser> {
-        const source = await this.fetchPageSource(`${this.currentCorsProxyUrl ?? ""}${url}`)
+    public async get(urlOrOptions: UrlOrOptions): Promise<PageParser> {
+        const source = await this.fetchPageSource(urlOrOptions)
         const page = new PageParser(source)
         return page
     }
 
-    public async getAll(urls: string[]): Promise<PageParserSet> {
-        const tasks = urls.map((url) => this.get(url))
+    public async getAll(urlsOrOptions: UrlOrOptions[]): Promise<PageParserSet> {
+        const tasks = urlsOrOptions.map((urlOrOptions) => this.get(urlOrOptions))
         const pages = await Promise.all(tasks)
         const pageSet = new PageParserSet(...pages)
         return pageSet

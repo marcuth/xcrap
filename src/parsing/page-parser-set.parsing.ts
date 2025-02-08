@@ -35,11 +35,11 @@ class PageParserSet extends Array<PageParser> {
         return dataSet
     }
 
-    public parseAll({
+    public async parseAll({
         query,
         extractor,
         limit
-    }: ParseAllOptions): string[] {
+    }: ParseAllOptions): Promise<string[]> {
         const dataSet: string[] = []
 
         for (const page of this) {
@@ -47,7 +47,7 @@ class PageParserSet extends Array<PageParser> {
 
             const adjustedLimit = limit !== undefined && limit !== null ? limit - this.length : limit
 
-            const currentDataSet = page.parseAll({
+            const currentDataSet = await page.parseAll({
                 query: query,
                 extractor: extractor,
                 limit: adjustedLimit

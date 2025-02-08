@@ -34,4 +34,14 @@ import { AxiosClient } from "../src/clients"
             withCredentials: true
         })
     })
+
+    const parser = await xcrap.client.get({
+        url: "https://pythonscraping.com/pages/auth/login.php",
+        auth: {
+            username: "batat",
+            password: "dasdasdasd"
+        } 
+    })
+
+    console.log(parser.source)
 })();

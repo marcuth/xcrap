@@ -10,7 +10,7 @@ export type ResultData<T> = {
         : string
 }
 
-export type Extractor = (element: HTMLElement) => string
+export type Extractor = (element: HTMLElement) => string | Promise<string>
 
 export type ParsingModelValueBase = {
     query?: string
@@ -162,38 +162,40 @@ class PageParser {
         return item
     }
 
-    public parseAll({
+    public async parseAll({
         query,
         extractor,
         limit
-    }: ParseAllOptions): string[] {
+    }: ParseAllOptions): Promise<string[]> {
         const elements = this.document.querySelectorAll(query)
 
         let dataSet: string[] = []
 
         for (const element of elements) {
             if (limit != undefined && dataSet.length >= limit) break
-            const data = extractor(element)
+            const data = await extractor(element)
             dataSet.push(data)
         }
 
         return dataSet
     }
 
-    public parseOne({
+    public async parseOne({
         query,
         extractor
-    }: ParseOneOptions): string {
+    }: ParseOneOptions): Promise<string> {
         let data: string
 
         if (query) {
-            data = this.parseAll({
+            const items = await this.parseAll({
                 query: query,
                 extractor: extractor,
                 limit: 1
-            })[0]
+            })
+
+            data = items[0]
         } else {
-            data = extractor(this.document)
+            data = await extractor(this.document)
         }
 
         return data
