@@ -81,7 +81,7 @@ class PageParser {
         this.document = htmlParser.parse(this.source, options)
     }
 
-    private processParsingModel<ParsingModelType extends ParsingModel>(element: HTMLElement, model: ParsingModelType): ResultData<ParsingModelType> {
+    private async processParsingModel<ParsingModelType extends ParsingModel>(element: HTMLElement, model: ParsingModelType): Promise<ResultData<ParsingModelType>> {
         const data = {} as ResultData<ParsingModelType>
     
         for (const key in model) {
@@ -105,7 +105,7 @@ class PageParser {
                         }
                     }
                 } else {
-                    data[key as keyof ParsingModelType] = extractor(element) as any
+                    data[key as keyof ParsingModelType] = await extractor(element) as any
                 }
             } else {
                 const { model: nestedParsingModel, query, isGroup } = modelValue as ParsingModelNestedValue
@@ -123,18 +123,22 @@ class PageParser {
         return data
     }
 
-    public parseItemGroup<ParsingModelType extends ParsingModel>({
+    public async parseItemGroup<ParsingModelType extends ParsingModel>({
         query,
         model,
         limit
-    }: ParseItemGroupOptions<ParsingModelType>): ResultData<ParsingModelType>[] {
+    }: ParseItemGroupOptions<ParsingModelType>): Promise<ResultData<ParsingModelType>[]> {
         const items = this.document.querySelectorAll(query)
 
-        let dataSet: (undefined | ResultData<ParsingModelType>)[] = items.map((item, index) => {
-            if (limit != undefined && index >= limit) return
-            const data = this.processParsingModel(item, model)
-            return data
-        }).filter(item => item !== undefined)
+        let dataSet: (undefined | ResultData<ParsingModelType>)[] = (
+            await Promise.all(
+                items.map(async (item, index) => {
+                    if (limit != undefined && index >= limit) return
+                    const data = await this.processParsingModel(item, model)
+                    return data
+                })
+            )
+        ).filter(item => item !== undefined)
 
         if (limit != undefined && dataSet.length >= limit) {
             dataSet = dataSet.slice(0, limit)
@@ -143,20 +147,22 @@ class PageParser {
         return dataSet as ResultData<ParsingModelType>[]
     }
 
-    public parseItem<ParsingModelType extends ParsingModel>({
+    public async parseItem<ParsingModelType extends ParsingModel>({
         model,
         query
-    }: ParseItemOptions<ParsingModelType>): ResultData<ParsingModelType> {
+    }: ParseItemOptions<ParsingModelType>): Promise<ResultData<ParsingModelType>> {
         let item: ResultData<ParsingModelType>
 
         if (query) {
-            item = this.parseItemGroup({
+            const items = await this.parseItemGroup({
                 query: query,
                 model: model,
                 limit: 1
-            })[0]
+            })
+
+            item = items[0]
         } else {
-            item = this.processParsingModel(this.document, model)
+            item = await this.processParsingModel(this.document, model)
         }
 
         return item
