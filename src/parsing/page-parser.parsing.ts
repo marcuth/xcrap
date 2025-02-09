@@ -93,13 +93,13 @@ class PageParser {
                 if (query) {
                     if (fieldType === "multiple") {
                         const nestedElements = element.querySelectorAll(query)
-                        data[key as keyof ParsingModelType] = nestedElements.map(extractor) as any
+                        data[key as keyof ParsingModelType] = await Promise.all(nestedElements.map(extractor)) as any
 
                     } else {
                         const nestedElement = element.querySelector(query)
 
                         if (nestedElement) {
-                            data[key as keyof ParsingModelType] = extractor(nestedElement) as any
+                            data[key as keyof ParsingModelType] = await extractor(nestedElement) as any
                         } else {
                             data[key as keyof ParsingModelType] = "" as any
                         }

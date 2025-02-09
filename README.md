@@ -1,3 +1,21 @@
+<div style="text-align: center;font-weight: 500;">“If I have seen further, it is by standing on the shoulders of giants.”</div>
+
+## Technologies used:
+
+- [node-html-parser](https://www.npmjs.com/package/node-html-parser)
+- [axios](https://www.npmjs.com/package/axios)
+- [puppeteer](https://www.npmjs.com/package/puppeteer)
+
+## Books I read:
+- Web Scraping with Python: Data Extraction from the Modern Web:
+    - [PT-BR]: https://amzn.to/417oNrS
+    - [EN]: https://amzn.to/3Qc3IpY
+
+## Friends I've been arguing with:
+- Rafael F.: https://github.com/justonedev42/
+
+---
+
 # Xcrap: A Web Scraping Framework for JavaScript
 
 Xcrap is a framework written in TypeScript to handle data extraction in web pages.

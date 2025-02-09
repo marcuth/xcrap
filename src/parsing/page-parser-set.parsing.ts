@@ -13,17 +13,17 @@ export type ParseAllOptions = {
 }
 
 class PageParserSet extends Array<PageParser> {
-    public parseItemGroupForAll<ParsingModelType extends ParsingModel>({
+    public async parseItemGroupForAll<ParsingModelType extends ParsingModel>({
         query,
         model,
         limit
-    }: ParseItemGroupForAllOptions<ParsingModelType>): ResultData<ParsingModelType>[] {
+    }: ParseItemGroupForAllOptions<ParsingModelType>): Promise<ResultData<ParsingModelType>[]> {
         const dataSet: ResultData<ParsingModelType>[] = []
 
         for (const page of this) {
             const adjustedLimit = limit !== undefined && limit !== null ? limit - this.length : limit
 
-            const currentDataSet = page.parseItemGroup({
+            const currentDataSet = await page.parseItemGroup({
                 model: model,
                 query: query,
                 limit: adjustedLimit
