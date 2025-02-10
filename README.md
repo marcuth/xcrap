@@ -8,8 +8,8 @@
 
 ## Books I read:
 - Web Scraping with Python: Data Extraction from the Modern Web:
-    - [PT-BR]: https://amzn.to/417oNrS
-    - [EN]: https://amzn.to/3Qc3IpY
+    - [PT-BR](https://encurtador.com.br/svq8Y)
+    - [EN](https://encurtador.com.br/5dS11)
 
 ## Friends I've been arguing with:
 - Rafael F.: https://github.com/justonedev42/
