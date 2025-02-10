@@ -58,7 +58,7 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
         const page = new PageParser(source)
         return page
     }
-
+    
     public async getAll(urlsOrOptions: UrlOrOptions[]): Promise<PageParserSet> {
         const tasks = urlsOrOptions.map((urlOrOptions) => this.get(urlOrOptions))
         const pages = await Promise.all(tasks)
