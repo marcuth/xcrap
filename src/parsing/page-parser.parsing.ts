@@ -112,10 +112,12 @@ class PageParser {
                 const nestedElements = element.querySelectorAll(query)
 
                 if (isGroup) {
-                    data[key as keyof ParsingModelType] = nestedElements.map(nestedElement => this.processParsingModel(nestedElement, nestedParsingModel)) as any
+                    data[key as keyof ParsingModelType] = await Promise.all(
+                        nestedElements.map(nestedElement => this.processParsingModel(nestedElement, nestedParsingModel))
+                    ) as any
                 } else {
                     const nestedElement = nestedElements[0]
-                    data[key as keyof ParsingModelType] = nestedElement ? this.processParsingModel(nestedElement, nestedParsingModel) : {} as any
+                    data[key as keyof ParsingModelType] = nestedElement ? await this.processParsingModel(nestedElement, nestedParsingModel) : {} as any
                 }
             }
         }
