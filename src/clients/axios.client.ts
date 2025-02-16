@@ -66,8 +66,8 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
         return page
     }
 
-    private createTaskChunks(tasks: Promise<PageParser>[], concurrency: number): Promise<PageParser>[][] {
-        const taskChunks: Promise<PageParser>[][] = []
+    private createTaskChunks(tasks: (() => Promise<PageParser>)[], concurrency: number): (() => Promise<PageParser>)[][] {
+        const taskChunks: (() => Promise<PageParser>)[][] = []
         const tasksLength = tasks.length
 
         for (let i = 0; i < tasksLength; i += concurrency) {
@@ -78,17 +78,21 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
     }
     
     public async getAll({ urlsOrSuboptions, concurrency }: GetAllMethodOptions): Promise<PageParserSet> {
-        const tasks = urlsOrSuboptions.map((getMethodOptions) => this.get(getMethodOptions))
+        const tasks = urlsOrSuboptions.map((getMethodOptions) => (
+            async () => await this.get(getMethodOptions)
+        ))
+
         const pages: PageParser[] = []
 
         const tasksChunks = this.createTaskChunks(tasks, concurrency ?? urlsOrSuboptions.length)
 
         for (const taskChunk of tasksChunks) {
-            const chunkPages = await Promise.all(taskChunk)
+            const chunkPages = await Promise.all(taskChunk.map(task => task()))
             pages.push(...chunkPages)
         }
 
         const pageSet = new PageParserSet(...pages)
+
         return pageSet
     }
 }
