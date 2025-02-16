@@ -12,8 +12,15 @@ export type AxiosInterceptors = {
     response: AxiosInterceptorManager<AxiosResponse>
 }
 
-export type UrlOrOptions = string | AxiosRequestConfig & {
+export type FetchPageOptions = string | AxiosRequestConfig & {
     url: string
+}
+
+export type GetMethodOptions = FetchPageOptions
+
+export type GetAllMethodOptions = {
+    urlsOrSuboptions: GetMethodOptions[]
+    concurrency?: number
 }
 
 class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
@@ -46,22 +53,41 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
         this.interceptors = this.client.interceptors
     }
 
-    public async fetchPageSource(urlOrOptions: UrlOrOptions): Promise<string> {
+    public async fetchPageSource(urlOrOptions: FetchPageOptions): Promise<string> {
         const url = typeof urlOrOptions === "string" ? urlOrOptions : urlOrOptions.url
         const { url: _, ...options } = typeof urlOrOptions === "string" ? { url: undefined } : urlOrOptions
         const response = await this.client.get(`${this.currentCorsProxyUrl ?? ""}${url}`, options)
         return response.data as string
     }
 
-    public async get(urlOrOptions: UrlOrOptions): Promise<PageParser> {
-        const source = await this.fetchPageSource(urlOrOptions)
+    public async get(options: GetMethodOptions): Promise<PageParser> {
+        const source = await this.fetchPageSource(options)
         const page = new PageParser(source)
         return page
     }
+
+    private createTaskChunks(tasks: Promise<PageParser>[], concurrency: number): Promise<PageParser>[][] {
+        const taskChunks: Promise<PageParser>[][] = []
+        const tasksLength = tasks.length
+
+        for (let i = 0; i < tasksLength; i += concurrency) {
+            taskChunks.push(tasks.slice(i, i + concurrency))
+        }
+
+        return taskChunks
+    }
     
-    public async getAll(urlsOrOptions: UrlOrOptions[]): Promise<PageParserSet> {
-        const tasks = urlsOrOptions.map((urlOrOptions) => this.get(urlOrOptions))
-        const pages = await Promise.all(tasks)
+    public async getAll({ urlsOrSuboptions, concurrency }: GetAllMethodOptions): Promise<PageParserSet> {
+        const tasks = urlsOrSuboptions.map((getMethodOptions) => this.get(getMethodOptions))
+        const pages: PageParser[] = []
+
+        const tasksChunks = this.createTaskChunks(tasks, concurrency ?? urlsOrSuboptions.length)
+
+        for (const taskChunk of tasksChunks) {
+            const chunkPages = await Promise.all(taskChunk)
+            pages.push(...chunkPages)
+        }
+
         const pageSet = new PageParserSet(...pages)
         return pageSet
     }

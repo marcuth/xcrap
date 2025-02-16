@@ -62,8 +62,8 @@ export type Client = {
     proxy?: any | ProxyFunction<any>
     userAgent?: string | UserAgentFunction
     corsProxyUrl?: string | CorsProxyUrlFuction
-    get(url: string): Promise<PageParser>
-    getAll(urls: string[]): Promise<PageParserSet>
+    get(...args: any[]): Promise<PageParser>
+    getAll(...args: any[]): Promise<PageParserSet>
 }
 
 export default BaseClient
