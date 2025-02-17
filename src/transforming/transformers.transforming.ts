@@ -1,3 +1,5 @@
+import * as dateFns from "date-fns"
+
 import { AnyObject } from "../common/types"
 
 const trimString = (key: string) => {
@@ -90,6 +92,26 @@ const normalizeString = (key: string) => {
     }
 }
 
+const stringDateToISO = (key: string, dateStringTemplate: string) => {
+    return (data: AnyObject) => {
+        const value = data[key] as string
+        return dateFns.parse(value, dateStringTemplate, new Date()).toISOString()
+    }
+}
+
+const stringDateToTimestamp = (key: string, dateStringTemplate: string) => {
+    return (data: AnyObject) => {
+        const value = data[key] as string
+        return dateFns.parse(value, dateStringTemplate, new Date()).getTime()
+    }
+}
+const stringDateToObject = (key: string, dateStringTemplate: string) => {
+    return (data: AnyObject) => {
+        const value = data[key] as string
+        return dateFns.parse(value, dateStringTemplate, new Date())
+    }
+}
+
 export {
     trimString,
     stringToUpperCase,
@@ -102,5 +124,8 @@ export {
     stringReplace,
     stringSplit,
     stringToTitleCase,
-    normalizeString
+    normalizeString,
+    stringDateToISO,
+    stringDateToTimestamp,
+    stringDateToObject
 }
