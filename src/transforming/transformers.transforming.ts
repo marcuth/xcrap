@@ -2,6 +2,24 @@ import * as dateFns from "date-fns"
 
 import { AnyObject } from "../common/types"
 
+export type StringToBooleanOptions = {
+    truthy?: string[]
+    falsy?: string[]
+    default?: boolean | null
+}
+
+export type ParseCurrencyOptions = {
+    currencySymbol?: string
+}
+
+export type FormatCurrencyOptions = {
+    locale: string
+    currencyCode: string
+    minimumFractionDigits?: number
+}
+
+export const defaultMinimumFractionDigits = 2
+
 const trimString = (key: string) => {
     return (data: AnyObject) => {
         const value = data[key] as string
@@ -112,6 +130,66 @@ const stringDateToObject = (key: string, dateStringTemplate: string) => {
     }
 }
 
+const stringToBoolean = (key: string, options?: StringToBooleanOptions) => {
+    return (data: AnyObject) => {
+        const value = data[key] as string
+        const truthyValues = options?.truthy || ["true", "1", "yes"]
+        const falsyValues = options?.falsy || ["false", "0", "no"]
+
+        if (truthyValues.includes(value.toLowerCase())) return true
+        if (falsyValues.includes(value.toLowerCase())) return false
+
+        return options?.default ?? null
+    }
+}
+
+const removeHtmlTags = (key: string) => {
+    return (data: AnyObject) => {
+        const value = data[key] as string;
+        return value.replace(/<\/?[^>]+(>|$)/g, "")
+    }
+}
+
+const sanitizeString = (key: string) => {
+    return (data: AnyObject) => {
+        const value = data[key] as string;
+        return value.replace(/[^a-zA-Z0-9\s]/g, "").trim()
+    }
+}
+
+const collapseWhitespace = (key: string) => {
+    return (data: AnyObject) => {
+        const value = data[key] as string
+        return value.replace(/\s+/g, " ").trim()
+    }
+}
+
+const parseCurrency = (key: string, options: ParseCurrencyOptions) => {
+    return (data: AnyObject) => {
+        const value = data[key] as string
+        let cleanedValue = value
+
+        if (options.currencySymbol) {
+            cleanedValue = cleanedValue.replace(new RegExp(`\\${options.currencySymbol}`, "g"), "")
+        }
+
+        cleanedValue = cleanedValue.replace(/[,]/g, "").trim()
+
+        return Number(cleanedValue)
+    }
+}
+
+const formatCurrency = (key: string, options: FormatCurrencyOptions) => {
+    return (data: AnyObject) => {
+        const value = data[key] as number
+        return new Intl.NumberFormat(options.locale, {
+            style: "currency",
+            currency: options.currencyCode,
+            minimumFractionDigits: options?.minimumFractionDigits ?? defaultMinimumFractionDigits,
+        }).format(value)
+    }
+}
+
 export {
     trimString,
     stringToUpperCase,
@@ -127,5 +205,11 @@ export {
     normalizeString,
     stringDateToISO,
     stringDateToTimestamp,
-    stringDateToObject
+    stringDateToObject,
+    stringToBoolean,
+    removeHtmlTags,
+    sanitizeString,
+    collapseWhitespace,
+    parseCurrency,
+    formatCurrency
 }
