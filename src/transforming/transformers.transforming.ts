@@ -18,7 +18,22 @@ export type FormatCurrencyOptions = {
     minimumFractionDigits?: number
 }
 
+export type ParseFormmatedNumberOptions = {
+    suffixes?: Record<string, number>
+    defaultValue?: number | null
+    sanitizenumberstring?: (value: string) => string
+}
+
 export const defaultMinimumFractionDigits = 2
+
+export const defaultFormattedNumberSuffixes = {
+    k: 1_000,
+    m: 1_000_000,
+    b: 1_000_000_000,
+    t: 1_000_000_000_000,
+    q: 1_000_000_000_000_000,
+    qq: 1_000_000_000_000_000_000
+} satisfies Record<string, number>
 
 const trimString = (key: string) => {
     return (data: AnyObject) => {
@@ -190,6 +205,32 @@ const formatCurrency = (key: string, options: FormatCurrencyOptions) => {
     }
 }
 
+const parseFormattedNumber = (
+    key: string,
+    options?: ParseFormmatedNumberOptions
+) => {
+    return (data: AnyObject) => {
+        const sanitizenumberstring = options?.sanitizenumberstring ?? (
+            (value) => value.toLowerCase().replace(",", ".").trim()
+        )
+
+        const value = sanitizenumberstring(data[key] as string)
+
+        const suffixes = options?.suffixes || defaultFormattedNumberSuffixes
+
+        for (const [suffix, multiplier] of Object.entries(suffixes)) {
+            if (value.endsWith(suffix)) {
+                const num = Number(value.replace(suffix, "").trim()) * multiplier
+                return isNaN(num) ? options?.defaultValue ?? null : num
+            }
+        }
+
+        const num = Number(value)
+
+        return isNaN(num) ? options?.defaultValue ?? null : num
+    }
+}
+
 export {
     trimString,
     stringToUpperCase,
@@ -211,5 +252,6 @@ export {
     sanitizeString,
     collapseWhitespace,
     parseCurrency,
-    formatCurrency
+    formatCurrency,
+    parseFormattedNumber
 }
