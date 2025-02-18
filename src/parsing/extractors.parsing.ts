@@ -30,11 +30,41 @@ const extractValue = (element: HTMLElement): string => {
     return value ?? ""
 }
 
+function extractOuterHtml(element: HTMLElement): string {
+    return element.outerHTML ?? ""
+}
+
+function extractTagName(element: HTMLElement): string {
+    return element.tagName ?? ""
+}
+
+function extractClassList(element: HTMLElement): string {
+    return element.classList.toString()
+}
+
+function extractId(element: HTMLElement): string {
+    return element.id ?? ""
+}
+
+function extractStyle(element: HTMLElement): string {
+    return element.getAttribute("style") ?? ""
+}
+
+function extractRole(element: HTMLElement): string {
+    return element.getAttribute("role") ?? ""
+}
+
 export {
     extractInnerText,
     extractTextContent,
     extractText,
     extractInnerHtml,
     extractAttribute,
-    extractValue
+    extractValue,
+    extractOuterHtml,
+    extractTagName,
+    extractClassList,
+    extractId,
+    extractStyle,
+    extractRole
 }
