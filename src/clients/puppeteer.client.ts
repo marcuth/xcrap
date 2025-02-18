@@ -19,7 +19,10 @@ export type GetMethodOptions = {
     javaScriptEnabled?: boolean
 }
 
-export type GetAllMethodOptions = GetMethodOptions[]
+export type GetAllMethodOptions = {
+    urlsOrSuboptions: GetMethodOptions[]
+    concurrency?: number
+}
 
 export type ExtractActionsResult = {
     before: PuppeteerClientActionFunction[]
@@ -133,18 +136,23 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         return new PageParser(content)
     }
 
-    public async getAll(urlsOrOptions: string[] | GetAllMethodOptions): Promise<PageParserSet> {
-        await this.ensureBrowser()
-
-        const pageSet = new PageParserSet()
-
-        for (const urlOrOption of urlsOrOptions) {
-            const page = await this.get(urlOrOption)
-            pageSet.push(page)
+    public async getAll({ urlsOrSuboptions, concurrency }: GetAllMethodOptions): Promise<PageParserSet> {
+            const tasks = urlsOrSuboptions.map((getMethodOptions) => (
+                async () => await this.get(getMethodOptions)
+            ))
+    
+            const pages: PageParser[] = []
+            const tasksChunks = this.createTaskChunks(tasks, concurrency ?? urlsOrSuboptions.length)
+    
+            for (const taskChunk of tasksChunks) {
+                const chunkPages = await Promise.all(taskChunk.map(task => task()))
+                pages.push(...chunkPages)
+            }
+    
+            const pageSet = new PageParserSet(...pages)
+    
+            return pageSet
         }
-
-        return pageSet
-    }
 
     public async close(): Promise<void> {
         if (this.browser) {

@@ -65,17 +65,6 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
         const page = new PageParser(source)
         return page
     }
-
-    private createTaskChunks(tasks: (() => Promise<PageParser>)[], concurrency: number): (() => Promise<PageParser>)[][] {
-        const taskChunks: (() => Promise<PageParser>)[][] = []
-        const tasksLength = tasks.length
-
-        for (let i = 0; i < tasksLength; i += concurrency) {
-            taskChunks.push(tasks.slice(i, i + concurrency))
-        }
-
-        return taskChunks
-    }
     
     public async getAll({ urlsOrSuboptions, concurrency }: GetAllMethodOptions): Promise<PageParserSet> {
         const tasks = urlsOrSuboptions.map((getMethodOptions) => (
@@ -83,7 +72,6 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
         ))
 
         const pages: PageParser[] = []
-
         const tasksChunks = this.createTaskChunks(tasks, concurrency ?? urlsOrSuboptions.length)
 
         for (const taskChunk of tasksChunks) {

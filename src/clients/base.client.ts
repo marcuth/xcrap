@@ -49,6 +49,17 @@ class BaseClient<Proxy> {
         return currentUserAgent
     }
 
+    protected createTaskChunks(tasks: (() => Promise<PageParser>)[], concurrency: number): (() => Promise<PageParser>)[][] {
+        const taskChunks: (() => Promise<PageParser>)[][] = []
+        const tasksLength = tasks.length
+
+        for (let i = 0; i < tasksLength; i += concurrency) {
+            taskChunks.push(tasks.slice(i, i + concurrency))
+        }
+
+        return taskChunks
+    }
+
     protected get currentProxy(): any | undefined {
         const currentProxy = typeof this.proxy === "function" ?
             (this.proxy as ProxyFunction)() :
