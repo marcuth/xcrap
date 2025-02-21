@@ -1,5 +1,6 @@
 import axios, { Axios, AxiosInstance, AxiosInterceptorManager, AxiosProxyConfig, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios"
-import axiosRateLimit, { rateLimitOptions, RateLimitedAxiosInstance } from "axios-rate-limit"
+import { RateLimitedAxiosInstance, rateLimitOptions } from "axios-rate-limit"
+const axiosRateLimit = require("axios-rate-limit")
 
 import BaseClient, { Client, ClientOptions, defaultUserAgent } from "./base.client"
 import { PageParserSet, PageParser } from "../parsing"

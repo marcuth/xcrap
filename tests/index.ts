@@ -31,7 +31,11 @@ import { AxiosClient } from "../src/clients"
     // console.log(transformedResult)
     const xcrap = new Xcrap({
         client: new AxiosClient({
-            withCredentials: true
+            withCredentials: true,
+            rateLimitOptions: {
+                maxRequests: 1,
+                perMilliseconds: 1000
+            }
         })
     })
 
