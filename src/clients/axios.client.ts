@@ -1,10 +1,12 @@
-import axios, { Axios, AxiosInterceptorManager, AxiosProxyConfig, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios"
+import axios, { Axios, AxiosInstance, AxiosInterceptorManager, AxiosProxyConfig, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios"
+import axiosRateLimit, { RateLimitedAxiosInstance, rateLimitOptions as RateLimitOptions } from "axios-rate-limit"
 
 import BaseClient, { Client, ClientOptions, defaultUserAgent } from "./base.client"
 import { PageParserSet, PageParser } from "../parsing"
 
 export type AxiosClientOptions = ClientOptions<AxiosProxyConfig> & {
     withCredentials?: boolean
+    rateLimitOptions?: RateLimitOptions
 }
 
 export type AxiosInterceptors = {
@@ -24,19 +26,25 @@ export type GetAllMethodOptions = {
 }
 
 class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
-    protected client: Axios
+    protected axiosInstance: Axios
+    protected client: RateLimitedAxiosInstance
     public interceptors: AxiosInterceptors
 
     public constructor(options: AxiosClientOptions = {}) {
         super(options)
 
-        this.client = axios.create({
+        this.axiosInstance = axios.create({
             proxy: this.currentProxy,
             headers: {
                 "User-Agent": this.currentUserAgent ?? defaultUserAgent
             },
             ...(options.withCredentials && { withCredentials: options.withCredentials })
         })
+
+        this.client = axiosRateLimit(
+            this.axiosInstance as AxiosInstance,
+            options.rateLimitOptions ?? {}
+        )
 
         this.client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
             config.proxy = this.currentProxy
