@@ -1,12 +1,12 @@
 import axios, { Axios, AxiosInstance, AxiosInterceptorManager, AxiosProxyConfig, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios"
-import * as axiosRateLimit from "axios-rate-limit"
+import axiosRateLimit, { rateLimitOptions, RateLimitedAxiosInstance } from "axios-rate-limit"
 
 import BaseClient, { Client, ClientOptions, defaultUserAgent } from "./base.client"
 import { PageParserSet, PageParser } from "../parsing"
 
 export type AxiosClientOptions = ClientOptions<AxiosProxyConfig> & {
     withCredentials?: boolean
-    rateLimitOptions?: axiosRateLimit.rateLimitOptions
+    rateLimitOptions?: rateLimitOptions
 }
 
 export type AxiosInterceptors = {
@@ -27,7 +27,7 @@ export type GetAllMethodOptions = {
 
 class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
     protected axiosInstance: Axios
-    protected client: axiosRateLimit.RateLimitedAxiosInstance
+    protected client: RateLimitedAxiosInstance
     public interceptors: AxiosInterceptors
 
     public constructor(options: AxiosClientOptions = {}) {
@@ -41,7 +41,7 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
             ...(options.withCredentials && { withCredentials: options.withCredentials })
         })
 
-        this.client = axiosRateLimit.default(
+        this.client = axiosRateLimit(
             this.axiosInstance as AxiosInstance,
             options.rateLimitOptions ?? {}
         )
