@@ -75,8 +75,8 @@ class Xcrap<T extends Client> {
 
             const url = initUrls[urlIndex]
             const page = await this.client.get(url)
-            const currentPage = Number(page.parseOne(currentPageTracker))
-            const lastPage = Number(page.parseOne(lastPageTracker))
+            const currentPage = Number(await page.parseOne(currentPageTracker))
+            const lastPage = Number(await page.parseOne(lastPageTracker))
 
             for (let pageIndex = currentPage; pageIndex <= lastPage; pageIndex++) {
                 if (
