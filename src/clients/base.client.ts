@@ -1,6 +1,6 @@
 import { Options as NodeHtmlParserOptions } from "node-html-parser"
 
-import { PageParserSet, PageParser } from "../parsing"
+import { PageParserSet, PageParser } from "@parsing/index"
 
 export type CorsProxyUrlFuction = () => string
 export type ProxyFunction<ProxyReturn = any> = () => ProxyReturn

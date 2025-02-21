@@ -27,7 +27,7 @@ export type ParsingModelNestedValue = {
 export type ParsingModelValue = ParsingModelValueBase | ParsingModelNestedValue
 
 export type ParsingModel = {
-    [key: string]: ParsingModelValueBase | ParsingModelNestedValue
+    [key: string]: ParsingModelValue
 }
 
 export type ParseItemGroupOptions<ParsingModelType> = {

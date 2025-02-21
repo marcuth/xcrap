@@ -2,8 +2,8 @@ import axios, { Axios, AxiosInstance, AxiosInterceptorManager, AxiosProxyConfig,
 import { RateLimitedAxiosInstance, rateLimitOptions } from "axios-rate-limit"
 const axiosRateLimit = require("axios-rate-limit")
 
-import BaseClient, { Client, ClientOptions, defaultUserAgent } from "./base.client"
-import { PageParserSet, PageParser } from "../parsing"
+import BaseClient, { Client, ClientOptions, defaultUserAgent } from "@clients/base.client"
+import { PageParserSet, PageParser } from "@parsing/index"
 
 export type AxiosClientOptions = ClientOptions<AxiosProxyConfig> & {
     withCredentials?: boolean

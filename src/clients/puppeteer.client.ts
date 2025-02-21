@@ -1,7 +1,7 @@
 import puppeteer, { Browser, Page, PuppeteerLaunchOptions } from "puppeteer"
 
-import BaseClient, { Client, ClientOptions } from "./base.client"
-import { PageParserSet, PageParser } from "../parsing"
+import BaseClient, { Client, ClientOptions } from "@clients/base.client"
+import { PageParserSet, PageParser } from "@parsing/index"
 
 export type PuppeteerProxy = string
 export type PuppeteerClientOptions = ClientOptions<PuppeteerProxy> & PuppeteerLaunchOptions & {}
