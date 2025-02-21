@@ -5,6 +5,8 @@
 - [node-html-parser](https://www.npmjs.com/package/node-html-parser)
 - [axios](https://www.npmjs.com/package/axios)
 - [puppeteer](https://www.npmjs.com/package/puppeteer)
+- [axios-rate-limit](https://www.npmjs.com/package/axios-rate-limit)
+- [date-fns](https://www.npmjs.com/package/date-fns)
 
 ## Books I read:
 - Web Scraping with Python: Data Extraction from the Modern Web:
