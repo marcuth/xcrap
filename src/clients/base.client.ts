@@ -1,44 +1,87 @@
 import { Options as NodeHtmlParserOptions } from "node-html-parser"
 
-import { HtmlParserList, HtmlParser } from "@parsing/index"
+import { SingleParser, MultipleParser, HtmlParser, HtmlParserList, JsonParser } from "@parsing/index"
+import JsonParserList from "@parsing/json-parser-list.parsing"
 
-export type CorsProxyUrlFuction = () => string
+export type ProxyUrlFuction = () => string
 export type ProxyFunction<ProxyReturn = any> = () => ProxyReturn
 export type UserAgentFunction = () => string
 
+export enum ParserType {
+    Json = "json",
+    Html = "html"
+}
+
 export type ClientOptions<Proxy> = {
-    corsProxyUrl?: string | CorsProxyUrlFuction
+    proxyUrl?: string | ProxyUrlFuction
     proxy?: Proxy | ProxyFunction<Proxy>
     userAgent?: string | UserAgentFunction
-    htmlParserOptions?: Partial<NodeHtmlParserOptions>
+    nodeHtmlParserOptions?: Partial<NodeHtmlParserOptions>
+    parserType?: `${ParserType}`
 }
+
 
 export const defaultUserAgent = "Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
 
 class BaseClient<Proxy> {
     public readonly proxy?: Proxy | ProxyFunction<Proxy>
     public readonly userAgent?: string | UserAgentFunction
-    public readonly corsProxyUrl?: string | CorsProxyUrlFuction
-    public readonly htmlParserOptions?: Partial<NodeHtmlParserOptions>
+    public readonly proxyUrl?: string | ProxyUrlFuction
+    public readonly nodeHtmlParserOptions?: Partial<NodeHtmlParserOptions>
+    protected readonly parserType: `${ParserType}`
 
     public constructor({
         proxy,
         userAgent,
-        corsProxyUrl,
-        htmlParserOptions
+        proxyUrl,
+        nodeHtmlParserOptions,
+        parserType
     }: ClientOptions<Proxy>) {
         this.proxy = proxy
         this.userAgent = userAgent ?? defaultUserAgent
-        this.corsProxyUrl = corsProxyUrl
-        this.htmlParserOptions = htmlParserOptions
+        this.proxyUrl = proxyUrl
+        this.nodeHtmlParserOptions = nodeHtmlParserOptions
+        this.parserType = parserType ?? "html"
     }
 
-    protected get currentCorsProxyUrl(): string | undefined {
-        const currentCorsProxyUrl = typeof this.corsProxyUrl === "function" ?
-            this.corsProxyUrl() :
-            this.corsProxyUrl
+    public createSingleParser<T extends keyof typeof parsers>(type: T, data: string): InstanceType<typeof parsers[T]> {
+        const parsers = {
+            html: HtmlParser,
+            json: JsonParser
+        } as const
+    
+        const ParserClass = parsers[type];
+    
+        if (!ParserClass) {
+            throw new Error(`Unsupported data parser type: ${type}`)
+        }
+    
+        return new ParserClass(data) as InstanceType<typeof parsers[T]>
+    }
 
-        return currentCorsProxyUrl
+    public createMultipleParser<T extends keyof typeof parsers>(type: T, singleParsers: SingleParser<any>[]): MultipleParser<any> {
+        const parsers = {
+            html: HtmlParserList,
+            json: JsonParserList
+        } as const
+    
+        const ParserClass = parsers[type]
+    
+        if (!ParserClass) {
+            throw new Error(`Unsupported data parser type: ${type}`)
+        }
+
+        const TypedParserClass = ParserClass as unknown as { new (parsers: SingleParser<any>[]): MultipleParser<any> }
+    
+        return new TypedParserClass(singleParsers)
+    }
+
+    protected get currentProxyUrl(): string | undefined {
+        const currentProxyUrl = typeof this.proxyUrl === "function" ?
+            this.proxyUrl() :
+            this.proxyUrl
+
+        return currentProxyUrl
     }
 
     protected get currentUserAgent(): string | undefined {
@@ -49,8 +92,8 @@ class BaseClient<Proxy> {
         return currentUserAgent
     }
 
-    protected createTaskChunks(tasks: (() => Promise<HtmlParser>)[], concurrency: number): (() => Promise<HtmlParser>)[][] {
-        const taskChunks: (() => Promise<HtmlParser>)[][] = []
+    protected createTaskChunks<T extends any>(tasks: (() => Promise<SingleParser<T>>)[], concurrency: number): (() => Promise<SingleParser<T>>)[][] {
+        const taskChunks: (() => Promise<SingleParser<T>>)[][] = []
         const tasksLength = tasks.length
 
         for (let i = 0; i < tasksLength; i += concurrency) {
@@ -69,12 +112,16 @@ class BaseClient<Proxy> {
     }
 }
 
+new BaseClient({
+
+})
+
 export type Client = {
     proxy?: any | ProxyFunction<any>
     userAgent?: string | UserAgentFunction
-    corsProxyUrl?: string | CorsProxyUrlFuction
-    get(...args: any[]): Promise<HtmlParser>
-    getMany(...args: any[]): Promise<HtmlParserList>
+    proxyUrl?: string | ProxyUrlFuction
+    get(...args: any[]): Promise<SingleParser<any>>
+    getMany(...args: any[]): Promise<MultipleParser<any>>
 }
 
 export default BaseClient

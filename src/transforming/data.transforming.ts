@@ -14,10 +14,10 @@ export type TransformDataOptions<T extends AnyObject> = {
     model: TransformationModel<T>
 }
 
-function transformData<T extends AnyObject>({
+async function transformData<T extends AnyObject>({
     data,
     model
-}: TransformDataOptions<T>): any {
+}: TransformDataOptions<T>): Promise<any> {
     const result: AnyObject = {}
 
     for (const key in model) {
@@ -25,24 +25,26 @@ function transformData<T extends AnyObject>({
             const middlewares = model[key] as TransformationMiddleware<T>[]
             let index = 0
 
-            const runMiddleware = (value: T & AnyObject): any => {
+            const runMiddleware = async (value: T & AnyObject): Promise<any> => {
                 if (index < middlewares.length) {
                     const currentMiddleware = middlewares[index]
                     index++
 
-                    return currentMiddleware(
+                    const nextValue = await currentMiddleware(
                         value,
-                        (nextContext) => runMiddleware({
+                        async (nextContext) => runMiddleware({
                             ...value,
                             ...(nextContext ? nextContext : {})
                         })
                     )
+
+                    return nextValue
                 }
 
                 return value
             }
 
-            result[key] = runMiddleware(data)
+            result[key] = await runMiddleware(data)
         }
     }
 

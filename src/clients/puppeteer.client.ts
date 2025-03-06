@@ -1,10 +1,14 @@
 import puppeteer, { Browser, Page, PuppeteerLaunchOptions } from "puppeteer"
 
 import BaseClient, { Client, ClientOptions } from "@clients/base.client"
-import { HtmlParserList, HtmlParser } from "@parsing/index"
+import { HtmlParserList, HtmlParser, SingleParser } from "@parsing/index"
 
 export type PuppeteerProxy = string
-export type PuppeteerClientOptions = ClientOptions<PuppeteerProxy> & PuppeteerLaunchOptions & {}
+
+export type PuppeteerClientOptions = Omit<
+    ClientOptions<PuppeteerProxy> & PuppeteerLaunchOptions, "parserType"
+>
+
 export type PuppeteerClientActionFunction = (page: Page) => any | Promise<any>
 export type PuppeteerClientActionType = "beforeRequest" | "afterRequest"
 
@@ -36,12 +40,15 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
     protected browser?: Browser
 
     public constructor(options: PuppeteerClientOptions = {}) {
-        super(options)
+        super({
+            ...options,
+            parserType: "html"
+        })
 
         this.options = options
         this.browser = undefined
     }
-    
+
     protected async initBrowser(): Promise<void> {
         const puppeteerArguments: string[] = []
 
@@ -128,31 +135,31 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
 
         await this.configurePage(page, typeof urlOrOptions === "string" ? undefined : urlOrOptions)
         await this.executeActions(page, actionsBeforeRequest)
-        await page.goto(`${this.currentCorsProxyUrl ?? ""}${url}`)
+        await page.goto(`${this.currentProxyUrl ?? ""}${url}`)
         await this.executeActions(page, actionsAfterRequest)
         const content = await page.content()
         await page.close()
 
-        return new HtmlParser(content)
+        return this.createSingleParser(this.parserType as "html", content)
     }
 
     public async getMany({ urlsOrSuboptions, concurrency }: GetManyMethodOptions): Promise<HtmlParserList> {
-            const tasks = urlsOrSuboptions.map((getMethodOptions) => (
-                async () => await this.get(getMethodOptions)
-            ))
-    
-            const pages: HtmlParser[] = []
-            const tasksChunks = this.createTaskChunks(tasks, concurrency ?? urlsOrSuboptions.length)
-    
-            for (const taskChunk of tasksChunks) {
-                const chunkPages = await Promise.all(taskChunk.map(task => task()))
-                pages.push(...chunkPages)
-            }
-    
-            const pageSet = new HtmlParserList(...pages)
-    
-            return pageSet
+        const tasks = urlsOrSuboptions.map((getMethodOptions) => (
+            async () => await this.get(getMethodOptions)
+        ))
+
+        const parsers: SingleParser<any>[] = []
+        const tasksChunks = this.createTaskChunks(tasks, concurrency ?? urlsOrSuboptions.length)
+
+        for (const taskChunk of tasksChunks) {
+            const chunkPages = await Promise.all(taskChunk.map(task => task()))
+            parsers.push(...chunkPages)
         }
+
+        const parserList = this.createMultipleParser(this.parserType as "html", parsers) as HtmlParserList
+
+        return parserList
+    }
 
     public async close(): Promise<void> {
         if (this.browser) {

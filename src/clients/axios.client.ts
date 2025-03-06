@@ -2,8 +2,9 @@ import axios, { Axios, AxiosInstance, AxiosInterceptorManager, AxiosProxyConfig,
 import { RateLimitedAxiosInstance, rateLimitOptions } from "axios-rate-limit"
 const axiosRateLimit = require("axios-rate-limit")
 
+import { HtmlParserList, HtmlParser, SingleParserType, MultipleParserType, SingleParser } from "@parsing/index"
 import BaseClient, { Client, ClientOptions, defaultUserAgent } from "@clients/base.client"
-import { HtmlParserList, HtmlParser } from "@parsing/index"
+import JsonParserList from "@parsing/json-parser-list.parsing"
 
 export type AxiosClientOptions = ClientOptions<AxiosProxyConfig> & {
     withCredentials?: boolean
@@ -15,21 +16,21 @@ export type AxiosInterceptors = {
     response: AxiosInterceptorManager<AxiosResponse>
 }
 
-export type FetchPageOptions = string | AxiosRequestConfig & {
+export type FetchPageOptions = AxiosRequestConfig & {
     url: string
 }
 
 export type GetMethodOptions = FetchPageOptions
 
 export type GetManyMethodOptions = {
-    urlsOrSuboptions: GetMethodOptions[]
+    suboptions: GetMethodOptions[]
     concurrency?: number
 }
 
 class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
     protected axiosInstance: Axios
     protected client: RateLimitedAxiosInstance
-    public interceptors: AxiosInterceptors
+    public interceptors: AxiosInterceptors  
 
     public constructor(options: AxiosClientOptions = {}) {
         super(options)
@@ -62,36 +63,41 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
         this.interceptors = this.client.interceptors
     }
 
-    public async fetchPageSource(urlOrOptions: FetchPageOptions): Promise<string> {
+    public async fetchPageData(urlOrOptions: FetchPageOptions): Promise<string> {
         const url = typeof urlOrOptions === "string" ? urlOrOptions : urlOrOptions.url
         const { url: _, ...options } = typeof urlOrOptions === "string" ? { url: undefined } : urlOrOptions
-        const response = await this.client.get(`${this.currentCorsProxyUrl ?? ""}${url}`, options)
+        const response = await this.client.get(`${this.currentProxyUrl ?? ""}${url}`, options)
         return response.data as string
     }
 
-    public async get(options: GetMethodOptions): Promise<HtmlParser> {
-        const source = await this.fetchPageSource(options)
-        const page = new HtmlParser(source)
+    public async get(options: GetMethodOptions) {
+        const source = await this.fetchPageData(options)
+        const page = this.createSingleParser(this.parserType, source)
         return page
     }
     
-    public async getMany({ urlsOrSuboptions, concurrency }: GetManyMethodOptions): Promise<HtmlParserList> {
-        const tasks = urlsOrSuboptions.map((getMethodOptions) => (
-            async () => await this.get(getMethodOptions)
+    public async getMany({ suboptions, concurrency }: GetManyMethodOptions) {
+        const tasks = suboptions.map((suboption) => (
+            async () => await this.get(suboption)
         ))
 
-        const pages: HtmlParser[] = []
-        const tasksChunks = this.createTaskChunks(tasks, concurrency ?? urlsOrSuboptions.length)
+        const parsers: SingleParser<any>[] = []
+        const tasksChunks = this.createTaskChunks<any>(tasks, concurrency ?? suboptions.length)
 
         for (const taskChunk of tasksChunks) {
             const chunkPages = await Promise.all(taskChunk.map(task => task()))
-            pages.push(...chunkPages)
+            parsers.push(...chunkPages)
         }
 
-        const pageSet = new HtmlParserList(...pages)
+        const pageSet = this.createMultipleParser(this.parserType, parsers)
 
         return pageSet
     }
 }
+
+const client = new AxiosClient({
+    parserType: "html",
+    
+})
 
 export default AxiosClient
