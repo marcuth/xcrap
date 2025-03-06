@@ -116,7 +116,7 @@ class Xcrap<T extends Client> {
         query,
         model
     }: ScrapeAllOptions<ParsingModelType>): Promise<ResultData<ParsingModelType>[][]> {
-        const pageParsers = await this.client.getAll(urls)
+        const pageParsers = await this.client.getMany(urls)
 
         const itemsSet = await Promise.all(
             pageParsers.map(async (pageParser: PageParser) => {

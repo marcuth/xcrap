@@ -21,7 +21,7 @@ export type FetchPageOptions = string | AxiosRequestConfig & {
 
 export type GetMethodOptions = FetchPageOptions
 
-export type GetAllMethodOptions = {
+export type GetManyMethodOptions = {
     urlsOrSuboptions: GetMethodOptions[]
     concurrency?: number
 }
@@ -75,7 +75,7 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
         return page
     }
     
-    public async getAll({ urlsOrSuboptions, concurrency }: GetAllMethodOptions): Promise<PageParserSet> {
+    public async getMany({ urlsOrSuboptions, concurrency }: GetManyMethodOptions): Promise<PageParserSet> {
         const tasks = urlsOrSuboptions.map((getMethodOptions) => (
             async () => await this.get(getMethodOptions)
         ))

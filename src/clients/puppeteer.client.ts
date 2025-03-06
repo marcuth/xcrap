@@ -19,7 +19,7 @@ export type GetMethodOptions = {
     javaScriptEnabled?: boolean
 }
 
-export type GetAllMethodOptions = {
+export type GetManyMethodOptions = {
     urlsOrSuboptions: GetMethodOptions[]
     concurrency?: number
 }
@@ -136,7 +136,7 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         return new PageParser(content)
     }
 
-    public async getAll({ urlsOrSuboptions, concurrency }: GetAllMethodOptions): Promise<PageParserSet> {
+    public async getMany({ urlsOrSuboptions, concurrency }: GetManyMethodOptions): Promise<PageParserSet> {
             const tasks = urlsOrSuboptions.map((getMethodOptions) => (
                 async () => await this.get(getMethodOptions)
             ))
