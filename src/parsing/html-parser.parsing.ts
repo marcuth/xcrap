@@ -69,7 +69,7 @@ export const defaultPageParseOptions = {
     }
 }
 
-class PageParser {
+class HtmlParser {
     public readonly source: string
     public readonly document: HTMLElement
 
@@ -210,4 +210,4 @@ class PageParser {
     }
 }
 
-export default PageParser
+export default HtmlParser

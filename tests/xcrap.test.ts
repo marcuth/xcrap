@@ -1,4 +1,4 @@
-import { extractInnerText, PageParser } from "../src/parsing"
+import { extractInnerText, HtmlParser } from "../src/parsing"
 import { AxiosClient } from "../src/clients"
 import Xcrap from "../src/xcrap"
 
@@ -21,9 +21,9 @@ describe("Create Xcrap Instance", () => {
 
     it("Should scrape data from a URL", async () => {
         const mockHtml = `<html><body><div class="item">Xpto</div></body></html>`
-        const mockPageParser = new PageParser(mockHtml)
+        const mockHtmlParser = new HtmlParser(mockHtml)
 
-        mockClient.get.mockResolvedValue(mockPageParser)
+        mockClient.get.mockResolvedValue(mockHtmlParser)
 
         const result = await xcrap.scrape({
             url: "https://example.com",

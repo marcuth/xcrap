@@ -1,4 +1,4 @@
-import PageParser, { Extractor, ParsingModel, ResultData } from "./parsing/page-parser.parsing"
+import HtmlParser, { Extractor, ParsingModel, ResultData } from "./parsing/html-parser.parsing"
 import { Client } from "./clients/base.client"
 import { AxiosClient } from "./clients"
 
@@ -116,11 +116,11 @@ class Xcrap<T extends Client> {
         query,
         model
     }: ScrapeAllOptions<ParsingModelType>): Promise<ResultData<ParsingModelType>[][]> {
-        const pageParsers = await this.client.getMany(urls)
+        const htmlParsers = await this.client.getMany(urls)
 
         const itemsSet = await Promise.all(
-            pageParsers.map(async (pageParser: PageParser) => {
-                return await pageParser.parseItemGroup({
+            htmlParsers.map(async (htmlParser: HtmlParser) => {
+                return await htmlParser.parseItemGroup({
                     query: query,
                     model: model
                 })

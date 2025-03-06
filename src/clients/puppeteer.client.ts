@@ -1,7 +1,7 @@
 import puppeteer, { Browser, Page, PuppeteerLaunchOptions } from "puppeteer"
 
 import BaseClient, { Client, ClientOptions } from "@clients/base.client"
-import { PageParserSet, PageParser } from "@parsing/index"
+import { HtmlParserList, HtmlParser } from "@parsing/index"
 
 export type PuppeteerProxy = string
 export type PuppeteerClientOptions = ClientOptions<PuppeteerProxy> & PuppeteerLaunchOptions & {}
@@ -114,7 +114,7 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         }
     }
 
-    public async get(urlOrOptions: string | GetMethodOptions): Promise<PageParser> {
+    public async get(urlOrOptions: string | GetMethodOptions): Promise<HtmlParser> {
         await this.ensureBrowser()
 
         let url = typeof urlOrOptions === "string" ? urlOrOptions : urlOrOptions.url
@@ -133,15 +133,15 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         const content = await page.content()
         await page.close()
 
-        return new PageParser(content)
+        return new HtmlParser(content)
     }
 
-    public async getMany({ urlsOrSuboptions, concurrency }: GetManyMethodOptions): Promise<PageParserSet> {
+    public async getMany({ urlsOrSuboptions, concurrency }: GetManyMethodOptions): Promise<HtmlParserList> {
             const tasks = urlsOrSuboptions.map((getMethodOptions) => (
                 async () => await this.get(getMethodOptions)
             ))
     
-            const pages: PageParser[] = []
+            const pages: HtmlParser[] = []
             const tasksChunks = this.createTaskChunks(tasks, concurrency ?? urlsOrSuboptions.length)
     
             for (const taskChunk of tasksChunks) {
@@ -149,7 +149,7 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
                 pages.push(...chunkPages)
             }
     
-            const pageSet = new PageParserSet(...pages)
+            const pageSet = new HtmlParserList(...pages)
     
             return pageSet
         }

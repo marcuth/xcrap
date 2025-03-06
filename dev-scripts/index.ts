@@ -120,7 +120,7 @@
 //         userAgent: fakeUa
 //     })
 
-//     const pageParser = await client.get({
+//     const htmlParser = await client.get({
 //         url: "https://www.terabyteshop.com.br/produto/17216/monitor-gamer-superframe-vision-24pol-fullhd-165hz-hdmidp-sfv2409s",
 //         actions: [
 //             randomizeViewportSize,
@@ -134,14 +134,14 @@
 //         ]
 //     })
 
-//     const pageParserModel = {
+//     const htmlParserModel = {
 //         title: {
 //             query: "title",
 //             extractor: extractInnerText
 //         }
 //     } satisfies ParsingModel
 
-//     const pageData = pageParser.parseItem({ model: pageParserModel })
+//     const pageData = htmlParser.parseItem({ model: htmlParserModel })
 
 //     console.log(pageData.title)
 

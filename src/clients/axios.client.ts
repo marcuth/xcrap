@@ -3,7 +3,7 @@ import { RateLimitedAxiosInstance, rateLimitOptions } from "axios-rate-limit"
 const axiosRateLimit = require("axios-rate-limit")
 
 import BaseClient, { Client, ClientOptions, defaultUserAgent } from "@clients/base.client"
-import { PageParserSet, PageParser } from "@parsing/index"
+import { HtmlParserList, HtmlParser } from "@parsing/index"
 
 export type AxiosClientOptions = ClientOptions<AxiosProxyConfig> & {
     withCredentials?: boolean
@@ -69,18 +69,18 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
         return response.data as string
     }
 
-    public async get(options: GetMethodOptions): Promise<PageParser> {
+    public async get(options: GetMethodOptions): Promise<HtmlParser> {
         const source = await this.fetchPageSource(options)
-        const page = new PageParser(source)
+        const page = new HtmlParser(source)
         return page
     }
     
-    public async getMany({ urlsOrSuboptions, concurrency }: GetManyMethodOptions): Promise<PageParserSet> {
+    public async getMany({ urlsOrSuboptions, concurrency }: GetManyMethodOptions): Promise<HtmlParserList> {
         const tasks = urlsOrSuboptions.map((getMethodOptions) => (
             async () => await this.get(getMethodOptions)
         ))
 
-        const pages: PageParser[] = []
+        const pages: HtmlParser[] = []
         const tasksChunks = this.createTaskChunks(tasks, concurrency ?? urlsOrSuboptions.length)
 
         for (const taskChunk of tasksChunks) {
@@ -88,7 +88,7 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
             pages.push(...chunkPages)
         }
 
-        const pageSet = new PageParserSet(...pages)
+        const pageSet = new HtmlParserList(...pages)
 
         return pageSet
     }

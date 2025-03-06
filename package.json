@@ -86,23 +86,23 @@
       "default": "./dist/esm/parsing/extractors.parsing.js",
       "types": "./dist/types/parsing/extractors.parsing.d.ts"
     },
+    "./parsing/html-parser-list.parsing": {
+      "import": "./dist/esm/parsing/html-parser-list.parsing.js",
+      "require": "./dist/cjs/parsing/html-parser-list.parsing.js",
+      "default": "./dist/esm/parsing/html-parser-list.parsing.js",
+      "types": "./dist/types/parsing/html-parser-list.parsing.d.ts"
+    },
+    "./parsing/html-parser.parsing": {
+      "import": "./dist/esm/parsing/html-parser.parsing.js",
+      "require": "./dist/cjs/parsing/html-parser.parsing.js",
+      "default": "./dist/esm/parsing/html-parser.parsing.js",
+      "types": "./dist/types/parsing/html-parser.parsing.d.ts"
+    },
     "./parsing": {
       "import": "./dist/esm/parsing/index.js",
       "require": "./dist/cjs/parsing/index.js",
       "default": "./dist/esm/parsing/index.js",
       "types": "./dist/types/parsing/index.d.ts"
-    },
-    "./parsing/page-parser-set.parsing": {
-      "import": "./dist/esm/parsing/page-parser-set.parsing.js",
-      "require": "./dist/cjs/parsing/page-parser-set.parsing.js",
-      "default": "./dist/esm/parsing/page-parser-set.parsing.js",
-      "types": "./dist/types/parsing/page-parser-set.parsing.d.ts"
-    },
-    "./parsing/page-parser.parsing": {
-      "import": "./dist/esm/parsing/page-parser.parsing.js",
-      "require": "./dist/cjs/parsing/page-parser.parsing.js",
-      "default": "./dist/esm/parsing/page-parser.parsing.js",
-      "types": "./dist/types/parsing/page-parser.parsing.d.ts"
     },
     "./transforming/data.transforming": {
       "import": "./dist/esm/transforming/data.transforming.js",

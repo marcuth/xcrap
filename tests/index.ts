@@ -1,4 +1,4 @@
-import { extractInnerText, ParsingModel } from "../src/parsing"
+import { extractInnerText, HtmlParser, ParsingModel } from "../src/parsing"
 import { TransformationModel, transformData } from "../src/transforming"
 import { Xcrap } from "../src"
 import { AxiosClient } from "../src/clients"
@@ -47,6 +47,6 @@ import { AxiosClient } from "../src/clients"
         },
 
     })
-
+    
     console.log(parser.source)
 })();

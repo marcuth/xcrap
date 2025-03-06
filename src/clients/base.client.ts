@@ -1,6 +1,6 @@
 import { Options as NodeHtmlParserOptions } from "node-html-parser"
 
-import { PageParserSet, PageParser } from "@parsing/index"
+import { HtmlParserList, HtmlParser } from "@parsing/index"
 
 export type CorsProxyUrlFuction = () => string
 export type ProxyFunction<ProxyReturn = any> = () => ProxyReturn
@@ -49,8 +49,8 @@ class BaseClient<Proxy> {
         return currentUserAgent
     }
 
-    protected createTaskChunks(tasks: (() => Promise<PageParser>)[], concurrency: number): (() => Promise<PageParser>)[][] {
-        const taskChunks: (() => Promise<PageParser>)[][] = []
+    protected createTaskChunks(tasks: (() => Promise<HtmlParser>)[], concurrency: number): (() => Promise<HtmlParser>)[][] {
+        const taskChunks: (() => Promise<HtmlParser>)[][] = []
         const tasksLength = tasks.length
 
         for (let i = 0; i < tasksLength; i += concurrency) {
@@ -73,8 +73,8 @@ export type Client = {
     proxy?: any | ProxyFunction<any>
     userAgent?: string | UserAgentFunction
     corsProxyUrl?: string | CorsProxyUrlFuction
-    get(...args: any[]): Promise<PageParser>
-    getMany(...args: any[]): Promise<PageParserSet>
+    get(...args: any[]): Promise<HtmlParser>
+    getMany(...args: any[]): Promise<HtmlParserList>
 }
 
 export default BaseClient

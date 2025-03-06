@@ -1,5 +1,5 @@
-import PageParser, { ParsingModel, ResultData, Extractor } from "./page-parser.parsing"
-import PageParserSet from "./page-parser-set.parsing"
+import HtmlParser, { ParsingModel, ResultData, Extractor } from "./html-parser.parsing"
+import HtmlParserList from "./html-parser-list.parsing"
 
 export * from "./extractors.parsing"
 
@@ -10,8 +10,8 @@ export type {
 }
 
 export {
-    PageParserSet,
-    PageParser
+    HtmlParserList,
+    HtmlParser
 }
 
-export * from "./page-parser-set.parsing"
+export * from "./html-parser-list.parsing"

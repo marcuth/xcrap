@@ -1,4 +1,4 @@
-import PageParser, { ParsingModel, Extractor, ResultData } from "./page-parser.parsing"
+import HtmlParser, { ParsingModel, Extractor, ResultData } from "./html-parser.parsing"
 
 export type ParseItemGroupForAllOptions<ParsingModelType> = {
     query: string
@@ -12,7 +12,7 @@ export type ParseAllOptions = {
     limit?: number
 }
 
-class PageParserSet extends Array<PageParser> {
+class HtmlParserList extends Array<HtmlParser> {
     public async parseItemGroupForAll<ParsingModelType extends ParsingModel>({
         query,
         model,
@@ -60,4 +60,4 @@ class PageParserSet extends Array<PageParser> {
     }
 }
 
-export default PageParserSet
+export default HtmlParserList
