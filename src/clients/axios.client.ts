@@ -7,7 +7,7 @@ import { PageParserSet, PageParser } from "@parsing/index"
 
 export type AxiosClientOptions = ClientOptions<AxiosProxyConfig> & {
     withCredentials?: boolean
-    rateLimitOptions?: rateLimitOptions
+    rateLimit?: rateLimitOptions
 }
 
 export type AxiosInterceptors = {
@@ -44,7 +44,7 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
 
         this.client = axiosRateLimit(
             this.axiosInstance as AxiosInstance,
-            options.rateLimitOptions ?? {}
+            options.rateLimit ?? {}
         )
 
         this.client.interceptors.request.use((config: InternalAxiosRequestConfig) => {

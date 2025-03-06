@@ -32,7 +32,7 @@ import { AxiosClient } from "../src/clients"
     const xcrap = new Xcrap({
         client: new AxiosClient({
             withCredentials: true,
-            rateLimitOptions: {
+            rateLimit: {
                 maxRequests: 1,
                 perMilliseconds: 1000
             }
@@ -45,7 +45,7 @@ import { AxiosClient } from "../src/clients"
             username: "batat",
             password: "dasdasdasd"
         },
-        
+
     })
 
     console.log(parser.source)
