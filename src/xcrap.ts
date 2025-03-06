@@ -48,15 +48,25 @@ class Xcrap<T extends Client> {
         return new Xcrap<AxiosClient>({ client: client })
     }
 
+    protected ensureHtmlParser() {
+        if (this.client.parserType !== "html") {
+            throw new Error("The client parser must be an HTML parser!")
+        }
+    }
+
+    protected ensurePageIndexGap(url: string) {
+        if (!url.includes("{pageIndex}")) {
+            throw new Error(`The provided URL '${url}' does not contain the {pageIndex} gap!`)
+        }
+    }
+
     public getPaginationUrlsWithRange({
         initUrl,
         paginationRange
     }: GetPaginationUrlsWithRangeOptions): string[] {
         const formattedUrls: string[] = []
 
-        if (!initUrl.includes("{pageIndex}")) {
-            throw new Error(`The provided URL '${initUrl}' does not contain the {pageIndex} gap!`)
-        }
+        this.ensurePageIndexGap(initUrl)
 
         for (let pageIndex = paginationRange[0]; pageIndex <= paginationRange[1]; pageIndex++) {
             formattedUrls.push(initUrl.replace(/{pageIndex}/g, String(pageIndex)))
@@ -73,13 +83,12 @@ class Xcrap<T extends Client> {
     }: GetPaginationUrlsWithTrackerOptions): Promise<string[]> {
         const formattedUrls: string[] = []
 
+        this.ensureHtmlParser()
+        this.ensurePageIndexGap(initUrl)
+
         const parser = await this.client.get(initUrl) as HtmlParser
         const currentPage = Number(await parser.parseOne(currentPageTracker))
         const lastPage = Number(await parser.parseOne(lastPageTracker))
-
-        if (!initUrl.includes("{pageIndex}")) {
-            throw new Error(`The provided URL '${initUrl}' does not contain the {pageIndex} gap!`)
-        }
 
         for (let pageIndex = currentPage; pageIndex <= lastPage; pageIndex++) {
             if (
@@ -100,6 +109,8 @@ class Xcrap<T extends Client> {
         query,
         model
     }: ScrapeOptions<HtmlParsingModelType>): Promise<HtmlParserResultData<HtmlParsingModelType>[]> {
+        this.ensureHtmlParser()
+
         const page = await this.client.get(url) as HtmlParser
 
         const items = page.parseItemGroup({
@@ -115,6 +126,8 @@ class Xcrap<T extends Client> {
         query,
         model
     }: ScrapeAllOptions<HtmlParsingModelType>): Promise<HtmlParserResultData<HtmlParsingModelType>[][]> {
+        this.ensureHtmlParser()
+
         const htmlParsers = await this.client.getMany(urls) as HtmlParserList
 
         const itemsList = await Promise.all(

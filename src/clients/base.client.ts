@@ -28,7 +28,7 @@ class BaseClient<Proxy> {
     public readonly userAgent?: string | UserAgentFunction
     public readonly proxyUrl?: string | ProxyUrlFuction
     public readonly nodeHtmlParserOptions?: Partial<NodeHtmlParserOptions>
-    protected readonly parserType: `${ParserType}`
+    public readonly parserType: `${ParserType}`
 
     public constructor({
         proxy,
@@ -120,6 +120,7 @@ export type Client = {
     proxy?: any | ProxyFunction<any>
     userAgent?: string | UserAgentFunction
     proxyUrl?: string | ProxyUrlFuction
+    parserType: `${ParserType}`
     get(...args: any[]): Promise<SingleParser<any>>
     getMany(...args: any[]): Promise<MultipleParser<any>>
 }
