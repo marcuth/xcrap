@@ -29,6 +29,10 @@ class BaseClient<Proxy> {
     public readonly proxyUrl?: string | ProxyUrlFuction
     public readonly nodeHtmlParserOptions?: Partial<NodeHtmlParserOptions>
     public readonly parserType: `${ParserType}`
+    private readonly parsers = {
+        html: HtmlParser,
+        json: JsonParser
+    }
 
     public constructor({
         proxy,
@@ -44,28 +48,18 @@ class BaseClient<Proxy> {
         this.parserType = parserType ?? "html"
     }
 
-    public createSingleParser<T extends keyof typeof parsers>(type: T, data: string): InstanceType<typeof parsers[T]> {
-        const parsers = {
-            html: HtmlParser,
-            json: JsonParser
-        } as const
-    
-        const ParserClass = parsers[type];
-    
+    public createSingleParser<T extends keyof typeof this.parsers>(type: T, data: string): InstanceType<typeof this.parsers[T]> {
+        const ParserClass = this.parsers[type]
+
         if (!ParserClass) {
             throw new Error(`Unsupported data parser type: ${type}`)
         }
     
-        return new ParserClass(data) as InstanceType<typeof parsers[T]>
+        return new ParserClass(data) as InstanceType<typeof this.parsers[T]>
     }
 
-    public createMultipleParser<T extends keyof typeof parsers>(type: T, singleParsers: SingleParser<any>[]): MultipleParser<any> {
-        const parsers = {
-            html: HtmlParserList,
-            json: JsonParserList
-        } as const
-    
-        const ParserClass = parsers[type]
+    public createMultipleParser<T extends keyof typeof this.parsers>(type: T, singleParsers: SingleParser<any>[]): MultipleParser<any> {
+        const ParserClass = this.parsers[type]
     
         if (!ParserClass) {
             throw new Error(`Unsupported data parser type: ${type}`)
@@ -111,10 +105,6 @@ class BaseClient<Proxy> {
         return currentProxy
     }
 }
-
-new BaseClient({
-
-})
 
 export type Client = {
     proxy?: any | ProxyFunction<any>

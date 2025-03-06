@@ -19,25 +19,25 @@
   "author": "Marcuth",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.7.9",
+    "axios": "^1.8.1",
     "axios-rate-limit": "^1.4.0",
     "date-fns": "^4.1.0",
-    "node-html-parser": "^6.1.13",
-    "puppeteer": "^23.3.0"
+    "node-html-parser": "^7.0.1",
+    "puppeteer": "^24.4.0"
   },
   "devDependencies": {
     "@types/fake-useragent": "^1.0.0",
     "@types/jest": "^29.5.14",
-    "@types/node": "^20.16.5",
+    "@types/node": "^22.13.9",
     "axios-mock-adapter": "^2.1.0",
     "fake-useragent": "^1.0.1",
     "jest": "^29.7.0",
     "microbundle": "^0.15.1",
     "npm-run-all": "^4.1.5",
     "rimraf": "^6.0.1",
-    "ts-jest": "^29.2.5",
+    "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.8.2"
   },
   "publishConfig": {
     "source": "./src/index.ts",
@@ -50,13 +50,13 @@
       "default": "./dist/esm/index.js",
       "types": "./dist/types/index.d.ts"
     },
-    "./clients/axios.client": {
+    "./clients/axios": {
       "import": "./dist/esm/clients/axios.client.js",
       "require": "./dist/cjs/clients/axios.client.js",
       "default": "./dist/esm/clients/axios.client.js",
       "types": "./dist/types/clients/axios.client.d.ts"
     },
-    "./clients/base.client": {
+    "./clients/base": {
       "import": "./dist/esm/clients/base.client.js",
       "require": "./dist/cjs/clients/base.client.js",
       "default": "./dist/esm/clients/base.client.js",
@@ -68,7 +68,7 @@
       "default": "./dist/esm/clients/index.js",
       "types": "./dist/types/clients/index.d.ts"
     },
-    "./clients/puppeteer.client": {
+    "./clients/puppeteer": {
       "import": "./dist/esm/clients/puppeteer.client.js",
       "require": "./dist/cjs/clients/puppeteer.client.js",
       "default": "./dist/esm/clients/puppeteer.client.js",
@@ -80,19 +80,19 @@
       "default": "./dist/esm/common/types.js",
       "types": "./dist/types/common/types.d.ts"
     },
-    "./parsing/extractors.parsing": {
+    "./parsing/extractors": {
       "import": "./dist/esm/parsing/extractors.parsing.js",
       "require": "./dist/cjs/parsing/extractors.parsing.js",
       "default": "./dist/esm/parsing/extractors.parsing.js",
       "types": "./dist/types/parsing/extractors.parsing.d.ts"
     },
-    "./parsing/html-parser-list.parsing": {
+    "./parsing/html-parser-list": {
       "import": "./dist/esm/parsing/html-parser-list.parsing.js",
       "require": "./dist/cjs/parsing/html-parser-list.parsing.js",
       "default": "./dist/esm/parsing/html-parser-list.parsing.js",
       "types": "./dist/types/parsing/html-parser-list.parsing.d.ts"
     },
-    "./parsing/html-parser.parsing": {
+    "./parsing/html-parser": {
       "import": "./dist/esm/parsing/html-parser.parsing.js",
       "require": "./dist/cjs/parsing/html-parser.parsing.js",
       "default": "./dist/esm/parsing/html-parser.parsing.js",
@@ -104,7 +104,19 @@
       "default": "./dist/esm/parsing/index.js",
       "types": "./dist/types/parsing/index.d.ts"
     },
-    "./transforming/data.transforming": {
+    "./parsing/json-parser-list": {
+      "import": "./dist/esm/parsing/json-parser-list.parsing.js",
+      "require": "./dist/cjs/parsing/json-parser-list.parsing.js",
+      "default": "./dist/esm/parsing/json-parser-list.parsing.js",
+      "types": "./dist/types/parsing/json-parser-list.parsing.d.ts"
+    },
+    "./parsing/json-parser": {
+      "import": "./dist/esm/parsing/json-parser.parsing.js",
+      "require": "./dist/cjs/parsing/json-parser.parsing.js",
+      "default": "./dist/esm/parsing/json-parser.parsing.js",
+      "types": "./dist/types/parsing/json-parser.parsing.d.ts"
+    },
+    "./transforming/data": {
       "import": "./dist/esm/transforming/data.transforming.js",
       "require": "./dist/cjs/transforming/data.transforming.js",
       "default": "./dist/esm/transforming/data.transforming.js",
@@ -116,13 +128,13 @@
       "default": "./dist/esm/transforming/index.js",
       "types": "./dist/types/transforming/index.d.ts"
     },
-    "./transforming/transformers.transforming": {
+    "./transforming/transformers": {
       "import": "./dist/esm/transforming/transformers.transforming.js",
       "require": "./dist/cjs/transforming/transformers.transforming.js",
       "default": "./dist/esm/transforming/transformers.transforming.js",
       "types": "./dist/types/transforming/transformers.transforming.d.ts"
     },
-    "./transforming/utils.transforming": {
+    "./transforming/utils": {
       "import": "./dist/esm/transforming/utils.transforming.js",
       "require": "./dist/cjs/transforming/utils.transforming.js",
       "default": "./dist/esm/transforming/utils.transforming.js",
@@ -134,7 +146,7 @@
       "default": "./dist/esm/utils/index.js",
       "types": "./dist/types/utils/index.d.ts"
     },
-    "./utils/url.util": {
+    "./utils/url": {
       "import": "./dist/esm/utils/url.util.js",
       "require": "./dist/cjs/utils/url.util.js",
       "default": "./dist/esm/utils/url.util.js",

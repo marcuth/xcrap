@@ -27,7 +27,7 @@ function generateExports(dir, base = "") {
             const dtsPath = `./dist/types${exportPath}.d.ts`
 
             if (exportPath !== "/index") {
-                exports[`.${exportPath.replace("/index", "")}`] = {
+                exports[`.${exportPath.replace("/index", "").split(".")[0]}`] = {
                     import: esmPath,
                     require: cjsPath,
                     default: esmPath,
