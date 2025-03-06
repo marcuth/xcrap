@@ -1,44 +1,44 @@
 import htmlParser, { HTMLElement, Options as NodeHtmlParserOptions } from "node-html-parser"
 
-export type ResultData<T> = {
+export type HtmlParserResultData<T> = {
     [K in keyof T]: T[K] extends { fieldType: "multiple" }
         ? string[]
-        : T[K] extends { model: infer NestedParsingModel }
+        : T[K] extends { model: infer NestedHtmlParsingModel }
         ? T[K] extends { isGroup: true }
-            ? ResultData<NestedParsingModel>[]
-            : ResultData<NestedParsingModel>
+            ? HtmlParserResultData<NestedHtmlParsingModel>[]
+            : HtmlParserResultData<NestedHtmlParsingModel>
         : string
 }
 
 export type Extractor = (element: HTMLElement) => string | Promise<string>
 
-export type ParsingModelValueBase = {
+export type HtmlParsingModelValueBase = {
     query?: string
     fieldType?: "single" | "multiple"
     extractor: Extractor
 }
 
-export type ParsingModelNestedValue = {
+export type HtmlParsingModelNestedValue = {
     query: string
-    model: ParsingModel
+    model: HtmlParsingModel
     isGroup?: boolean
 }
 
-export type ParsingModelValue = ParsingModelValueBase | ParsingModelNestedValue
+export type HtmlParsingModelValue = HtmlParsingModelValueBase | HtmlParsingModelNestedValue
 
-export type ParsingModel = {
-    [key: string]: ParsingModelValue
+export type HtmlParsingModel = {
+    [key: string]: HtmlParsingModelValue
 }
 
-export type ParseItemGroupOptions<ParsingModelType> = {
+export type ParseItemGroupOptions<HtmlParsingModelType> = {
     query: string,
-    model: ParsingModelType
+    model: HtmlParsingModelType
     limit?: number
 }
 
-export type ParseItemOptions<ParsingModelType> = {
+export type ParseItemOptions<HtmlParsingModelType> = {
     query?: string
-    model: ParsingModelType
+    model: HtmlParsingModelType
 }
 
 export type ParseAllOptions = {
@@ -52,7 +52,7 @@ export type ParseOneOptions = {
     extractor: Extractor
 }
 
-export const defaultPageParseOptions = {
+export const defaultHtmlParserOptions = {
     lowerCaseTagName: false,
     comment: false,
     fixNestedATags: true,
@@ -75,17 +75,17 @@ class HtmlParser {
 
     public constructor(
         source: string,
-        options: Partial<NodeHtmlParserOptions> = defaultPageParseOptions
+        options: Partial<NodeHtmlParserOptions> = defaultHtmlParserOptions
     ) {
         this.source = source
         this.document = htmlParser.parse(this.source, options)
     }
 
-    private async processParsingModel<ParsingModelType extends ParsingModel>(element: HTMLElement, model: ParsingModelType): Promise<ResultData<ParsingModelType>> {
-        const data = {} as ResultData<ParsingModelType>
+    protected async processParsingModel<HtmlParsingModelType extends HtmlParsingModel>(element: HTMLElement, model: HtmlParsingModelType): Promise<HtmlParserResultData<HtmlParsingModelType>> {
+        const data = {} as HtmlParserResultData<HtmlParsingModelType>
     
         for (const key in model) {
-            const modelValue = model[key] as ParsingModelValue
+            const modelValue = model[key] as HtmlParsingModelValue
     
             if ("extractor" in modelValue) {
                 const { query, extractor, fieldType } = modelValue
@@ -93,31 +93,31 @@ class HtmlParser {
                 if (query) {
                     if (fieldType === "multiple") {
                         const nestedElements = element.querySelectorAll(query)
-                        data[key as keyof ParsingModelType] = await Promise.all(nestedElements.map(extractor)) as any
+                        data[key as keyof HtmlParsingModelType] = await Promise.all(nestedElements.map(extractor)) as any
 
                     } else {
                         const nestedElement = element.querySelector(query)
 
                         if (nestedElement) {
-                            data[key as keyof ParsingModelType] = await extractor(nestedElement) as any
+                            data[key as keyof HtmlParsingModelType] = await extractor(nestedElement) as any
                         } else {
-                            data[key as keyof ParsingModelType] = "" as any
+                            data[key as keyof HtmlParsingModelType] = "" as any
                         }
                     }
                 } else {
-                    data[key as keyof ParsingModelType] = await extractor(element) as any
+                    data[key as keyof HtmlParsingModelType] = await extractor(element) as any
                 }
             } else {
-                const { model: nestedParsingModel, query, isGroup } = modelValue as ParsingModelNestedValue
+                const { model: nestedHtmlParsingModel, query, isGroup } = modelValue as HtmlParsingModelNestedValue
                 const nestedElements = element.querySelectorAll(query)
 
                 if (isGroup) {
-                    data[key as keyof ParsingModelType] = await Promise.all(
-                        nestedElements.map(nestedElement => this.processParsingModel(nestedElement, nestedParsingModel))
+                    data[key as keyof HtmlParsingModelType] = await Promise.all(
+                        nestedElements.map(nestedElement => this.processParsingModel(nestedElement, nestedHtmlParsingModel))
                     ) as any
                 } else {
                     const nestedElement = nestedElements[0]
-                    data[key as keyof ParsingModelType] = nestedElement ? await this.processParsingModel(nestedElement, nestedParsingModel) : {} as any
+                    data[key as keyof HtmlParsingModelType] = nestedElement ? await this.processParsingModel(nestedElement, nestedHtmlParsingModel) : {} as any
                 }
             }
         }
@@ -125,14 +125,14 @@ class HtmlParser {
         return data
     }
 
-    public async parseItemGroup<ParsingModelType extends ParsingModel>({
+    public async parseItemGroup<HtmlParsingModelType extends HtmlParsingModel>({
         query,
         model,
         limit
-    }: ParseItemGroupOptions<ParsingModelType>): Promise<ResultData<ParsingModelType>[]> {
+    }: ParseItemGroupOptions<HtmlParsingModelType>): Promise<HtmlParserResultData<HtmlParsingModelType>[]> {
         const items = this.document.querySelectorAll(query)
 
-        let dataSet: (undefined | ResultData<ParsingModelType>)[] = (
+        let dataSet: (undefined | HtmlParserResultData<HtmlParsingModelType>)[] = (
             await Promise.all(
                 items.map(async (item, index) => {
                     if (limit != undefined && index >= limit) return
@@ -146,14 +146,14 @@ class HtmlParser {
             dataSet = dataSet.slice(0, limit)
         }
 
-        return dataSet as ResultData<ParsingModelType>[]
+        return dataSet as HtmlParserResultData<HtmlParsingModelType>[]
     }
 
-    public async parseItem<ParsingModelType extends ParsingModel>({
+    public async parseItem<HtmlParsingModelType extends HtmlParsingModel>({
         model,
         query
-    }: ParseItemOptions<ParsingModelType>): Promise<ResultData<ParsingModelType>> {
-        let item: ResultData<ParsingModelType>
+    }: ParseItemOptions<HtmlParsingModelType>): Promise<HtmlParserResultData<HtmlParsingModelType>> {
+        let item: HtmlParserResultData<HtmlParsingModelType>
 
         if (query) {
             const items = await this.parseItemGroup({

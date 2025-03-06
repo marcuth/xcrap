@@ -1,19 +1,19 @@
-import { extractInnerText, HtmlParser, ParsingModel } from "../src/parsing"
+import { extractInnerText, HtmlParser, HtmlParsingModel } from "../src/parsing"
 import { TransformationModel, transformData } from "../src/transforming"
 import { Xcrap } from "../src"
 import { AxiosClient } from "../src/clients"
 
 ;(async () => {
-    // const parsingModel = {
+    // const htmlParsingModel = {
     //     title: {
     //         query: "title",
     //         extractor: extractInnerText,
     //     },
-    // } satisfies ParsingModel
+    // } satisfies HtmlParsingModel
 
     // const result = await xcrap.scrape({
     //     url: "https://google.com",
-    //     model: parsingModel,
+    //     model: htmlParsingModel,
     //     query: "head",
     // })
 
@@ -47,6 +47,6 @@ import { AxiosClient } from "../src/clients"
         },
 
     })
-    
+
     console.log(parser.source)
 })();

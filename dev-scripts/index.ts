@@ -1,7 +1,7 @@
 // import fakeUa from "fake-useragent"
 
 
-// import { extractInnerText, ParsingModel, PuppeteerClient, PuppeteerClientAction } from "../src"
+// import { extractInnerText, HtmlParsingModel, PuppeteerClient, PuppeteerClientAction } from "../src"
 
 // const randomizeViewportSize: PuppeteerClientAction = {
 //     type: "beforeRequest",
@@ -139,7 +139,7 @@
 //             query: "title",
 //             extractor: extractInnerText
 //         }
-//     } satisfies ParsingModel
+//     } satisfies HtmlParsingModel
 
 //     const pageData = htmlParser.parseItem({ model: htmlParserModel })
 

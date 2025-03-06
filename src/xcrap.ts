@@ -1,4 +1,4 @@
-import HtmlParser, { Extractor, ParsingModel, ResultData } from "./parsing/html-parser.parsing"
+import HtmlParser, { Extractor, HtmlParsingModel, ResultData } from "./parsing/html-parser.parsing"
 import { Client } from "./clients/base.client"
 import { AxiosClient } from "./clients"
 
@@ -11,16 +11,16 @@ export type XcrapOptions<T> = {
     client: T
 }
 
-export type ScrapeOptions<ParsingModelType> = {
+export type ScrapeOptions<HtmlParsingModelType> = {
     url: string
     query: string
-    model: ParsingModelType
+    model: HtmlParsingModelType
 }
 
-export type ScrapeAllOptions<ParsingModelType> = {
+export type ScrapeAllOptions<HtmlParsingModelType> = {
     urls: string[]
     query: string
-    model: ParsingModelType
+    model: HtmlParsingModelType
 }
 
 export type GetPaginationUrlsWithTrackerOptions = {
@@ -96,11 +96,11 @@ class Xcrap<T extends Client> {
         return formattedUrls
     }
 
-    public async scrape<ParsingModelType extends ParsingModel>({
+    public async scrape<HtmlParsingModelType extends HtmlParsingModel>({
         url,
         query,
         model
-    }: ScrapeOptions<ParsingModelType>): Promise<ResultData<ParsingModelType>[]> {
+    }: ScrapeOptions<HtmlParsingModelType>): Promise<ResultData<HtmlParsingModelType>[]> {
         const page = await this.client.get(url)
 
         const items = page.parseItemGroup({
@@ -111,11 +111,11 @@ class Xcrap<T extends Client> {
         return items
     }
 
-    public async scrapeAll<ParsingModelType extends ParsingModel>({
+    public async scrapeAll<HtmlParsingModelType extends HtmlParsingModel>({
         urls,
         query,
         model
-    }: ScrapeAllOptions<ParsingModelType>): Promise<ResultData<ParsingModelType>[][]> {
+    }: ScrapeAllOptions<HtmlParsingModelType>): Promise<ResultData<HtmlParsingModelType>[][]> {
         const htmlParsers = await this.client.getMany(urls)
 
         const itemsSet = await Promise.all(

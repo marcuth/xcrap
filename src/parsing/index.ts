@@ -1,17 +1,21 @@
-import HtmlParser, { ParsingModel, ResultData, Extractor } from "./html-parser.parsing"
+import HtmlParser, { HtmlParsingModel, HtmlParserResultData, Extractor } from "./html-parser.parsing"
+import JsonParser, { JsonParsingModel, JsonParserResultData } from "./json-parser.parsing"
 import HtmlParserList from "./html-parser-list.parsing"
 
 export * from "./extractors.parsing"
 
 export type {
-    ParsingModel,
-    ResultData,
-    Extractor
+    HtmlParsingModel,
+    HtmlParserResultData,
+    Extractor,
+    JsonParsingModel,
+    JsonParserResultData
 }
 
 export {
     HtmlParserList,
-    HtmlParser
+    HtmlParser,
+    JsonParser
 }
 
 export * from "./html-parser-list.parsing"

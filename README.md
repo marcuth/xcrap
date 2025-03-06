@@ -26,13 +26,13 @@ Xcrap is a framework written in TypeScript to handle data extraction in web page
 
 Data extraction works based on two types of models:
 
-## ParsingModel
+## HtmlParsingModel
 
 Each model key receives a `query` which is a CSS selector, and an `extractor` which is a function that will extract a certain property from an HTML element. It also accepts that the field has multiple results by passing the information in the `fieldType`, the model also supports alignment, so you can put models inside models to obtain a complex data structure, you can also define that it is a group of objects through the `isGroup` property, but don't get too attached to the resulting data structure.
 
 ## TransformationModel
 
-Each model key receives an array of functions called `middlewares`. These `middlewares` work in a similar way to those we are used to when creating a backend server, I may or may not call the next middleware. It is not necessary for the key to actually exist in the `ParsingModel` you used for data extraction, each function will receive an object containing all the keys from the extraction result, so structure the data however you want.
+Each model key receives an array of functions called `middlewares`. These `middlewares` work in a similar way to those we are used to when creating a backend server, I may or may not call the next middleware. It is not necessary for the key to actually exist in the `HtmlParsingModel` you used for data extraction, each function will receive an object containing all the keys from the extraction result, so structure the data however you want.
 
 ## Clients
 

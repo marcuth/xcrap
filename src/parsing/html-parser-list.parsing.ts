@@ -1,8 +1,8 @@
-import HtmlParser, { ParsingModel, Extractor, ResultData } from "./html-parser.parsing"
+import HtmlParser, { HtmlParsingModel, Extractor, HtmlParserResultData } from "./html-parser.parsing"
 
-export type ParseItemGroupForAllOptions<ParsingModelType> = {
+export type ParseItemGroupForAllOptions<HtmlParsingModelType> = {
     query: string
-    model: ParsingModelType
+    model: HtmlParsingModelType
     limit?: number
 }
 
@@ -13,12 +13,12 @@ export type ParseAllOptions = {
 }
 
 class HtmlParserList extends Array<HtmlParser> {
-    public async parseItemGroupForAll<ParsingModelType extends ParsingModel>({
+    public async parseItemGroupForAll<HtmlParsingModelType extends HtmlParsingModel>({
         query,
         model,
         limit
-    }: ParseItemGroupForAllOptions<ParsingModelType>): Promise<ResultData<ParsingModelType>[]> {
-        const dataSet: ResultData<ParsingModelType>[] = []
+    }: ParseItemGroupForAllOptions<HtmlParsingModelType>): Promise<HtmlParserResultData<HtmlParsingModelType>[]> {
+        const dataSet: HtmlParserResultData<HtmlParsingModelType>[] = []
 
         for (const page of this) {
             const adjustedLimit = limit !== undefined && limit !== null ? limit - this.length : limit
