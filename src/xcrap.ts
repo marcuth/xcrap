@@ -1,4 +1,5 @@
-import HtmlParser, { Extractor, HtmlParsingModel, ResultData } from "./parsing/html-parser.parsing"
+import HtmlParser, { Extractor, HtmlParsingModel, HtmlParserResultData } from "@parsing/html-parser.parsing"
+import HtmlParserList from "@parsing/html-parser-list.parsing"
 import { Client } from "./clients/base.client"
 import { AxiosClient } from "./clients"
 
@@ -24,14 +25,14 @@ export type ScrapeAllOptions<HtmlParsingModelType> = {
 }
 
 export type GetPaginationUrlsWithTrackerOptions = {
-    initUrls: string[]
+    initUrl: string
     currentPageTracker: Tracker
     lastPageTracker: Tracker
-    limits?: number[]
+    limit?: number
 }
 
 export type GetPaginationUrlsWithRangeOptions = {
-    initUrls: string[]
+    initUrl: string
     paginationRange: [number, number]
 }
 
@@ -43,54 +44,52 @@ class Xcrap<T extends Client> {
     }
 
     public static createDefault(): Xcrap<AxiosClient> {
-        const client = new AxiosClient()
+        const client = new AxiosClient({ parserType: "html" })
         return new Xcrap<AxiosClient>({ client: client })
     }
 
     public getPaginationUrlsWithRange({
-        initUrls,
+        initUrl,
         paginationRange
     }: GetPaginationUrlsWithRangeOptions): string[] {
         const formattedUrls: string[] = []
 
+        if (!initUrl.includes("{pageIndex}")) {
+            throw new Error(`The provided URL '${initUrl}' does not contain the {pageIndex} gap!`)
+        }
+
         for (let pageIndex = paginationRange[0]; pageIndex <= paginationRange[1]; pageIndex++) {
-            for (let url of initUrls) {
-                formattedUrls.push(url.replace(/{pageIndex}/g, String(pageIndex)))
-            }
+            formattedUrls.push(initUrl.replace(/{pageIndex}/g, String(pageIndex)))
         }
 
         return formattedUrls
     }
 
     public async getPaginationUrlsWithTracker({
-        initUrls,
+        initUrl,
         currentPageTracker,
         lastPageTracker,
-        limits
+        limit
     }: GetPaginationUrlsWithTrackerOptions): Promise<string[]> {
         const formattedUrls: string[] = []
 
-        for (let urlIndex = 0; urlIndex < initUrls.length; urlIndex++) {
-            const currentFormattedUrls: string[] = []
+        const parser = await this.client.get(initUrl) as HtmlParser
+        const currentPage = Number(await parser.parseOne(currentPageTracker))
+        const lastPage = Number(await parser.parseOne(lastPageTracker))
 
-            const url = initUrls[urlIndex]
-            const page = await this.client.get(url)
-            const currentPage = Number(await page.parseOne(currentPageTracker))
-            const lastPage = Number(await page.parseOne(lastPageTracker))
+        if (!initUrl.includes("{pageIndex}")) {
+            throw new Error(`The provided URL '${initUrl}' does not contain the {pageIndex} gap!`)
+        }
 
-            for (let pageIndex = currentPage; pageIndex <= lastPage; pageIndex++) {
-                if (
-                    limits !== undefined &&
-                    limits !== null &&
-                    limits[urlIndex] !== null &&
-                    currentFormattedUrls.length >= limits[urlIndex]
-                ) break
+        for (let pageIndex = currentPage; pageIndex <= lastPage; pageIndex++) {
+            if (
+                limit !== undefined &&
+                limit !== null &&
+                formattedUrls.length >= limit
+            ) break
 
-                const formattedUrl = url.replace(/{pageIndex}/g, String(pageIndex))
-                currentFormattedUrls.push(formattedUrl)
-            }
-
-            formattedUrls.push(...currentFormattedUrls)
+            const formattedUrl = initUrl.replace(/{pageIndex}/g, String(pageIndex))
+            formattedUrls.push(formattedUrl)
         }
 
         return formattedUrls
@@ -100,8 +99,8 @@ class Xcrap<T extends Client> {
         url,
         query,
         model
-    }: ScrapeOptions<HtmlParsingModelType>): Promise<ResultData<HtmlParsingModelType>[]> {
-        const page = await this.client.get(url)
+    }: ScrapeOptions<HtmlParsingModelType>): Promise<HtmlParserResultData<HtmlParsingModelType>[]> {
+        const page = await this.client.get(url) as HtmlParser
 
         const items = page.parseItemGroup({
             query: query,
@@ -111,15 +110,15 @@ class Xcrap<T extends Client> {
         return items
     }
 
-    public async scrapeAll<HtmlParsingModelType extends HtmlParsingModel>({
+    public async scrapeMany<HtmlParsingModelType extends HtmlParsingModel>({
         urls,
         query,
         model
-    }: ScrapeAllOptions<HtmlParsingModelType>): Promise<ResultData<HtmlParsingModelType>[][]> {
-        const htmlParsers = await this.client.getMany(urls)
+    }: ScrapeAllOptions<HtmlParsingModelType>): Promise<HtmlParserResultData<HtmlParsingModelType>[][]> {
+        const htmlParsers = await this.client.getMany(urls) as HtmlParserList
 
-        const itemsSet = await Promise.all(
-            htmlParsers.map(async (htmlParser: HtmlParser) => {
+        const itemsList = await Promise.all(
+            htmlParsers.map(async (htmlParser) => {
                 return await htmlParser.parseItemGroup({
                     query: query,
                     model: model
@@ -127,7 +126,7 @@ class Xcrap<T extends Client> {
             })
         )
 
-        return itemsSet
+        return itemsList
     }
 }
 
