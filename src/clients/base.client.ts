@@ -85,7 +85,7 @@ class BaseClient<Proxy> {
         return currentUserAgent
     }
 
-    protected createTaskChunks<T extends any>(tasks: (() => Promise<SingleParser<T>>)[], concurrency: number): (() => Promise<SingleParser<T>>)[][] {
+    protected createTaskChunks<T extends any>(tasks: (() => Promise<any>)[], concurrency: number): (() => Promise<SingleParser<T>>)[][] {
         const taskChunks: (() => Promise<SingleParser<T>>)[][] = []
         const tasksLength = tasks.length
 
@@ -110,8 +110,8 @@ export type Client = {
     userAgent?: string | UserAgentFunction
     proxyUrl?: string | ProxyUrlFuction
     parserType: `${ParserType}`
-    get(...args: any[]): Promise<SingleParser<any>>
-    getMany(...args: any[]): Promise<MultipleParser<any>>
+    get<T extends SingleParser<any>>(...args: any[]): Promise<T>
+    getMany<T extends MultipleParser<any>>(...args: any[]): Promise<T>
 }
 
 export default BaseClient

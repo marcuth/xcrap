@@ -22,7 +22,7 @@ export type FetchPageOptions = AxiosRequestConfig & {
 export type GetMethodOptions = FetchPageOptions
 
 export type GetManyMethodOptions = {
-    suboptions: GetMethodOptions[]
+    requests: GetMethodOptions[]
     concurrency?: number
 }
 
@@ -69,28 +69,28 @@ class AxiosClient extends BaseClient<AxiosProxyConfig> implements Client {
         return response.data as string
     }
 
-    public async get(options: GetMethodOptions) {
+    public async get<T>(options: GetMethodOptions): Promise<T>  {
         const source = await this.fetchPageData(options)
-        const page = this.createSingleParser(this.parserType, source)
-        return page
+        const parser = this.createSingleParser(this.parserType, source) as T
+        return parser
     }
     
-    public async getMany({ suboptions, concurrency }: GetManyMethodOptions) {
-        const tasks = suboptions.map((suboption) => (
-            async () => await this.get(suboption)
+    public async getMany<T>({ requests, concurrency }: GetManyMethodOptions): Promise<T> {
+        const tasks = requests.map((request) => (
+            async () => await this.get<T>(request)
         ))
 
-        const parsers: SingleParser<any>[] = []
-        const tasksChunks = this.createTaskChunks<any>(tasks, concurrency ?? suboptions.length)
+        const parsers: SingleParser<T>[] = [] 
+        const tasksChunks = this.createTaskChunks<any>(tasks, concurrency ?? requests.length)
 
         for (const taskChunk of tasksChunks) {
             const chunkPages = await Promise.all(taskChunk.map(task => task()))
             parsers.push(...chunkPages)
         }
 
-        const pageSet = this.createMultipleParser(this.parserType, parsers)
+        const parserList = this.createMultipleParser(this.parserType, parsers)
 
-        return pageSet
+        return parserList as T
     }
 }
 

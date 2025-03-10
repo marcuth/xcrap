@@ -121,7 +121,7 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         }
     }
 
-    public async get(urlOrOptions: string | GetMethodOptions): Promise<HtmlParser> {
+    public async get<T = HtmlParser>(urlOrOptions: string | GetMethodOptions): Promise<T> {
         await this.ensureBrowser()
 
         let url = typeof urlOrOptions === "string" ? urlOrOptions : urlOrOptions.url
@@ -140,10 +140,10 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         const content = await page.content()
         await page.close()
 
-        return this.createSingleParser(this.parserType as "html", content)
+        return this.createSingleParser(this.parserType, content) as T
     }
 
-    public async getMany({ urlsOrSuboptions, concurrency }: GetManyMethodOptions): Promise<HtmlParserList> {
+    public async getMany<T = HtmlParserList>({ urlsOrSuboptions, concurrency }: GetManyMethodOptions): Promise<T> {
         const tasks = urlsOrSuboptions.map((getMethodOptions) => (
             async () => await this.get(getMethodOptions)
         ))
@@ -156,9 +156,9 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
             parsers.push(...chunkPages)
         }
 
-        const parserList = this.createMultipleParser(this.parserType as "html", parsers) as HtmlParserList
+        const parserList = this.createMultipleParser(this.parserType, parsers)
 
-        return parserList
+        return parserList as T
     }
 
     public async close(): Promise<void> {
