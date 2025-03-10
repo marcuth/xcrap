@@ -1,4 +1,4 @@
-import puppeteer, { Browser, Page, PuppeteerLaunchOptions } from "puppeteer"
+import puppeteer, { Browser, Page, LaunchOptions } from "puppeteer"
 
 import BaseClient, { Client, ClientOptions } from "@clients/base.client"
 import { HtmlParserList, HtmlParser, SingleParser } from "@parsing/index"
@@ -6,7 +6,7 @@ import { HtmlParserList, HtmlParser, SingleParser } from "@parsing/index"
 export type PuppeteerProxy = string
 
 export type PuppeteerClientOptions = Omit<
-    ClientOptions<PuppeteerProxy> & PuppeteerLaunchOptions, "parserType"
+    ClientOptions<PuppeteerProxy> & LaunchOptions, "parserType"
 >
 
 export type PuppeteerClientActionFunction = (page: Page) => any | Promise<any>

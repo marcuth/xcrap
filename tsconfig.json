@@ -18,6 +18,7 @@
         "@common/*": ["common/*"] 
       }
     },
-    "include": ["src/**/*.ts"],
+    "preserveSymlinks": false,
+    "include": ["./src/**/*.ts"],
     "exclude": ["node_modules"]
   }
