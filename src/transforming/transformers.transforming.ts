@@ -1,6 +1,6 @@
 import * as dateFns from "date-fns"
 
-import { AnyObject } from "@common/types"
+import { AnyObject } from "../common/types"
 
 export type StringToBooleanOptions = {
     truthy?: string[]

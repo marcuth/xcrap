@@ -1,7 +1,6 @@
 import { Options as NodeHtmlParserOptions } from "node-html-parser"
 
-import { SingleParser, MultipleParser, HtmlParser, HtmlParserList, JsonParser } from "@parsing/index"
-import JsonParserList from "@parsing/json-parser-list.parsing"
+import { SingleParser, MultipleParser, HtmlParser, JsonParser } from "../parsing"
 
 export type ProxyUrlFuction = () => string
 export type ProxyFunction<ProxyReturn = any> = () => ProxyReturn

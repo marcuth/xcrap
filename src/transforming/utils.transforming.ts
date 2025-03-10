@@ -1,5 +1,5 @@
-import { NextMiddleware, TransformationMiddleware } from "@transforming/data.transforming"
-import { AnyObject } from "@common/types"
+import { NextMiddleware, TransformationMiddleware } from "../transforming/data.transforming"
+import { AnyObject } from "../common/types"
 
 export type CallNextOptions<T extends AnyObject> = {
     middleware: TransformationMiddleware<T>

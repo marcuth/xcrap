@@ -10,23 +10,6 @@
     "strict": true,
     "skipLibCheck": true,
     "baseUrl": "./src",
-    "paths": {
-      "@clients/*": [
-        "./clients/*"
-      ],
-      "@parsing/*": [
-        "parsing/*"
-      ],
-      "@utils/*": [
-        "./utils/*"
-      ],
-      "@transforming/*": [
-        "./transforming/*"
-      ],
-      "@common/*": [
-        "./common/*"
-      ]
-    }
   },
   "preserveSymlinks": false,
   "include": [

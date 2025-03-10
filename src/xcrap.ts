@@ -1,5 +1,5 @@
-import HtmlParser, { Extractor, HtmlParsingModel, HtmlParserResultData } from "@parsing/html-parser.parsing"
-import HtmlParserList from "@parsing/html-parser-list.parsing"
+import HtmlParser, { Extractor, HtmlParsingModel, HtmlParserResultData } from "./parsing/html-parser.parsing"
+import HtmlParserList from "./parsing/html-parser-list.parsing"
 import { Client } from "./clients/base.client"
 import { AxiosClient } from "./clients"
 
