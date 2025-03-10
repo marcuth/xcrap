@@ -54,6 +54,10 @@ function extractRole(element: HTMLElement): string {
     return element.getAttribute("role") ?? ""
 }
 
+const extractHref = extractAttribute("href")
+
+const extractSrc = extractAttribute("src")
+
 export {
     extractInnerText,
     extractTextContent,
@@ -66,5 +70,7 @@ export {
     extractClassList,
     extractId,
     extractStyle,
-    extractRole
+    extractRole,
+    extractHref,
+    extractSrc
 }
