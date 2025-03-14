@@ -18,7 +18,7 @@ export type ScrapeOptions<HtmlParsingModelType> = {
     model: HtmlParsingModelType
 }
 
-export type ScrapeAllOptions<HtmlParsingModelType> = {
+export type ScrapeManyOptions<HtmlParsingModelType> = {
     urls: string[]
     query: string
     model: HtmlParsingModelType
@@ -111,9 +111,9 @@ class Xcrap<T extends Client> {
     }: ScrapeOptions<HtmlParsingModelType>): Promise<HtmlParserResultData<HtmlParsingModelType>[]> {
         this.ensureHtmlParser()
 
-        const page = await this.client.get(url) as HtmlParser
+        const parser = await this.client.get<HtmlParser>(url)
 
-        const items = page.parseItemGroup({
+        const items = await parser.parseItemGroup({
             query: query,
             model: model
         })
@@ -125,10 +125,10 @@ class Xcrap<T extends Client> {
         urls,
         query,
         model
-    }: ScrapeAllOptions<HtmlParsingModelType>): Promise<HtmlParserResultData<HtmlParsingModelType>[][]> {
+    }: ScrapeManyOptions<HtmlParsingModelType>): Promise<HtmlParserResultData<HtmlParsingModelType>[][]> {
         this.ensureHtmlParser()
 
-        const htmlParsers = await this.client.getMany(urls) as HtmlParserList
+        const htmlParsers = await this.client.getMany<HtmlParserList>(urls)
 
         const itemsList = await Promise.all(
             htmlParsers.map(async (htmlParser) => {
