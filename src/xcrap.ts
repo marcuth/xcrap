@@ -87,8 +87,8 @@ class Xcrap<T extends Client> {
         this.ensurePageIndexGap(initUrl)
 
         const parser = await this.client.get(initUrl) as HtmlParser
-        const currentPage = Number(await parser.parseOne(currentPageTracker))
-        const lastPage = Number(await parser.parseOne(lastPageTracker))
+        const currentPage = Number(await parser.parseFirst(currentPageTracker))
+        const lastPage = Number(await parser.parseFirst(lastPageTracker))
 
         for (let pageIndex = currentPage; pageIndex <= lastPage; pageIndex++) {
             if (

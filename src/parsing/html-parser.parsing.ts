@@ -41,13 +41,13 @@ export type ParseItemOptions<HtmlParsingModelType> = {
     model: HtmlParsingModelType
 }
 
-export type ParseAllOptions = {
+export type ParseManyOptions = {
     query: string
     extractor: Extractor
     limit?: number
 }
 
-export type ParseOneOptions = {
+export type ParseFirstOptions = {
     query?: string
     extractor: Extractor
 }
@@ -170,11 +170,11 @@ class HtmlParser {
         return item
     }
 
-    public async parseAll({
+    public async parseMany({
         query,
         extractor,
         limit
-    }: ParseAllOptions): Promise<string[]> {
+    }: ParseManyOptions): Promise<string[]> {
         const elements = this.document.querySelectorAll(query)
 
         let dataSet: string[] = []
@@ -188,14 +188,14 @@ class HtmlParser {
         return dataSet
     }
 
-    public async parseOne({
+    public async parseFirst({
         query,
         extractor
-    }: ParseOneOptions): Promise<string> {
+    }: ParseFirstOptions): Promise<string> {
         let data: string
 
         if (query) {
-            const items = await this.parseAll({
+            const items = await this.parseMany({
                 query: query,
                 extractor: extractor,
                 limit: 1

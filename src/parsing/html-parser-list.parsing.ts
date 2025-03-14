@@ -6,7 +6,7 @@ export type ParseItemGroupForAllOptions<HtmlParsingModelType> = {
     limit?: number
 }
 
-export type ParseAllOptions = {
+export type ParseManyOptions = {
     query: string
     extractor: Extractor
     limit?: number
@@ -35,11 +35,11 @@ class HtmlParserList extends Array<HtmlParser> {
         return dataSet
     }
 
-    public async parseAll({
+    public async parseMany({
         query,
         extractor,
         limit
-    }: ParseAllOptions): Promise<string[]> {
+    }: ParseManyOptions): Promise<string[]> {
         const dataSet: string[] = []
 
         for (const page of this) {
@@ -47,7 +47,7 @@ class HtmlParserList extends Array<HtmlParser> {
 
             const adjustedLimit = limit !== undefined && limit !== null ? limit - this.length : limit
 
-            const currentDataSet = await page.parseAll({
+            const currentDataSet = await page.parseMany({
                 query: query,
                 extractor: extractor,
                 limit: adjustedLimit

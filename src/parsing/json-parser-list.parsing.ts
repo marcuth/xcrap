@@ -7,7 +7,7 @@ export type ParseItemGroupForAllOptions<JsonParsingModelType> = {
     limit?: number
 }
 
-export type ParseAllOptions = {
+export type ParseManyOptions = {
     path: string
     limit?: number
 }
@@ -31,7 +31,7 @@ class JsonParserList<T> extends Array<JsonParser<T>> {
         return dataSet
     }
 
-    public parseAll({ path, limit }: ParseAllOptions): any[] {
+    public parseMany({ path, limit }: ParseManyOptions): any[] {
         const dataSet: any[] = []
 
         for (const parser of this) {
