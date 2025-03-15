@@ -24,7 +24,7 @@ export type GetMethodOptions = {
 }
 
 export type GetManyMethodOptions = {
-    urlsOrSuboptions: GetMethodOptions[]
+    requests: GetMethodOptions[]
     concurrency?: number
 }
 
@@ -143,13 +143,13 @@ class PuppeteerClient extends BaseClient<PuppeteerProxy> implements Client {
         return this.createSingleParser(this.parserType, content) as T
     }
 
-    public async getMany<T = HtmlParserList>({ urlsOrSuboptions, concurrency }: GetManyMethodOptions): Promise<T> {
-        const tasks = urlsOrSuboptions.map((getMethodOptions) => (
-            async () => await this.get(getMethodOptions)
+    public async getMany<T = HtmlParserList>({ requests, concurrency }: GetManyMethodOptions): Promise<T> {
+        const tasks = requests.map((request) => (
+            async () => await this.get(request)
         ))
 
         const parsers: SingleParser<any>[] = []
-        const tasksChunks = this.createTaskChunks(tasks, concurrency ?? urlsOrSuboptions.length)
+        const tasksChunks = this.createTaskChunks(tasks, concurrency ?? requests.length)
 
         for (const taskChunk of tasksChunks) {
             const chunkPages = await Promise.all(taskChunk.map(task => task()))

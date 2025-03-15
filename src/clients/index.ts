@@ -1,5 +1,5 @@
-import PuppeteerClient, { PuppeteerClientAction, PuppeteerClientActionType, PuppeteerClientActionFunction } from "./puppeteer.client"
-import BaseClient, { Client } from "./base.client"
+import PuppeteerClient, { PuppeteerClientAction, PuppeteerClientActionType, PuppeteerClientActionFunction, defaultActionType, ExtractActionsResult } from "./puppeteer.client"
+import BaseClient, { Client, defaultUserAgent } from "./base.client"
 import AxiosClient from "./axios.client"
 
 export type {
@@ -12,5 +12,7 @@ export type {
 export {
     BaseClient,
     PuppeteerClient,
-    AxiosClient
+    AxiosClient,
+    defaultActionType as defaultPuppeteerActionType,
+    defaultUserAgent
 }
