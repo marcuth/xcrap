@@ -1,4 +1,4 @@
-import { extractInnerText, HtmlParser, HtmlParsingModel } from "../src/parsing"
+import { extractHref, extractInnerText, HtmlParser, HtmlParsingModel } from "../src/parsing"
 import { TransformationModel, transformData } from "../src/transforming"
 import { Xcrap } from "../src"
 import { AxiosClient } from "../src/clients"
@@ -35,17 +35,22 @@ import { AxiosClient } from "../src/clients"
             rateLimit: {
                 maxRequests: 1,
                 perMilliseconds: 1000
-            }
+            },
+            parserType: "html"
         })
     })
 
-    const parser = await xcrap.client.get({
+    const parser = await xcrap.client.get<HtmlParser>({
         url: "https://pythonscraping.com/pages/auth/login.php",
         auth: {
             username: "batat",
-            password: "dasdasdasd"
+            password: "dasdasdasd",
         },
+    })
 
+    const url = await parser.parseFirst({
+        query: "a",
+        extractor: extractHref,
     })
 
     console.log(parser.source)

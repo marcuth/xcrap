@@ -14,7 +14,7 @@ export type Extractor = (element: HTMLElement) => string | Promise<string>
 
 export type HtmlParsingModelValueBase = {
     query?: string
-    fieldType?: "single" | "multiple"
+    isGroup?: boolean
     extractor: Extractor
 }
 
@@ -88,10 +88,10 @@ class HtmlParser {
             const modelValue = model[key] as HtmlParsingModelValue
     
             if ("extractor" in modelValue) {
-                const { query, extractor, fieldType } = modelValue
+                const { query, extractor, isGroup } = modelValue
     
                 if (query) {
-                    if (fieldType === "multiple") {
+                    if (isGroup) {
                         const nestedElements = element.querySelectorAll(query)
                         data[key as keyof HtmlParsingModelType] = await Promise.all(nestedElements.map(extractor)) as any
 
@@ -134,11 +134,13 @@ class HtmlParser {
 
         let dataSet: (undefined | HtmlParserResultData<HtmlParsingModelType>)[] = (
             await Promise.all(
-                items.map(async (item, index) => {
-                    if (limit != undefined && index >= limit) return
-                    const data = await this.processParsingModel(item, model)
-                    return data
-                })
+                items.map(
+                    async (item, index) => {
+                        if (limit != undefined && index >= limit) return
+                        const data = await this.processParsingModel(item, model)
+                        return data
+                    }
+                )
             )
         ).filter(item => item !== undefined)
 
