@@ -3,7 +3,7 @@ import HtmlParserList from "./parsing/html-parser-list.parsing"
 import { Client } from "./clients/base.client"
 import { AxiosClient } from "./clients"
 
-export type Tracker = {
+export type PageTracker = {
     query: string
     extractor: Extractor
 }
@@ -26,8 +26,8 @@ export type ScrapeManyOptions<HtmlParsingModelType> = {
 
 export type GetPaginationUrlsWithTrackerOptions = {
     initUrl: string
-    currentPageTracker: Tracker
-    lastPageTracker: Tracker
+    currentPageTracker: PageTracker
+    lastPageTracker: PageTracker
     limit?: number
 }
 
